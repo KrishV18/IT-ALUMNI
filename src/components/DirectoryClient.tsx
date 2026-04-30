@@ -79,14 +79,13 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
   return (
     <div className="bg-background min-h-screen pb-24">
       {/* Page Header */}
-      <div className="border-b border-white/5 bg-black/40 backdrop-blur-3xl pt-10 pb-8 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[400px] bg-primary/8 rounded-full blur-[120px] pointer-events-none" />
+      <div className="border-b border-black/5 bg-white pt-10 pb-8 px-6 shadow-sm">
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <p className="text-[10px] font-bold tracking-[0.18em] uppercase text-primary mb-2">
+            <p className="section-label mb-2">
               IT Department
             </p>
-            <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tight text-foreground">
+            <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tight text-foreground font-serif">
               Student Directory
             </h1>
             <p className="text-muted-foreground text-sm mb-8 flex items-center gap-2">
@@ -133,7 +132,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setMobileFiltersOpen(true)}
-                className="lg:hidden flex items-center gap-2 text-sm font-semibold text-foreground bg-card/80 border border-white/10 hover:border-white/20 px-3.5 py-2 rounded-xl transition-all"
+                className="lg:hidden flex items-center gap-2 text-sm font-semibold text-foreground bg-white border border-black/10 hover:border-black/20 px-3.5 py-2 rounded-xl transition-all shadow-sm"
               >
                 <Filter size={14} className="text-primary" />
                 Filters
@@ -147,7 +146,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               {hasAnyFilter && (
                 <button
                   onClick={handleClear}
-                  className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-indigo-300 bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl transition-all"
+                  className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-indigo-700 bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl transition-all"
                 >
                   <X size={13} />
                   Clear
@@ -166,12 +165,12 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center py-20 px-6 text-center bg-card/20 border border-dashed border-white/10 rounded-3xl"
+              className="flex flex-col items-center justify-center py-20 px-6 text-center bg-white border border-dashed border-black/10 rounded-3xl shadow-sm"
             >
-              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 text-muted-foreground">
+              <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mb-4 text-muted-foreground">
                 <SearchX size={30} />
               </div>
-              <p className="text-lg font-bold mb-2 text-foreground">No students found</p>
+              <p className="text-lg font-bold mb-2 text-foreground font-serif">No students found</p>
               <p className="text-muted-foreground text-sm mb-6 max-w-xs leading-relaxed">
                 Nothing matched your search or filters. Try adjusting them.
               </p>
@@ -205,7 +204,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileFiltersOpen(false)}
             />
 
@@ -216,14 +215,14 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 350, damping: 35 }}
-              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card border-t border-white/10 rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-black/10 rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto"
             >
               {/* Sheet handle */}
-              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-white/5 sticky top-0 bg-card z-10">
-                <h2 className="font-bold text-foreground">Filters</h2>
+              <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-black/5 sticky top-0 bg-white z-10">
+                <h2 className="font-bold text-foreground font-serif">Filters</h2>
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-muted-foreground transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-black/5 hover:bg-black/10 text-muted-foreground transition-colors"
                   aria-label="Close filters"
                 >
                   <X size={16} />
@@ -233,7 +232,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
                 <FilterPanel students={students} filters={filters} onFilterChange={handleFilterChange} onClear={handleClear} />
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="mt-4 w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl text-sm font-semibold shadow-lg"
+                  className="mt-4 w-full bg-primary text-white py-3 rounded-xl text-sm font-semibold shadow-md"
                 >
                   Apply Filters
                   {activeFilterCount > 0 && ` (${activeFilterCount} active)`}

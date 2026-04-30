@@ -34,7 +34,7 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
   return (
     <div>
       <label
-        className={`text-[0.68rem] font-bold tracking-[0.12em] uppercase mb-2 block transition-colors duration-200 ${
+        className={`section-label mb-2 block transition-colors duration-200 ${
           isActive ? "text-primary" : "text-muted-foreground"
         }`}
       >
@@ -45,17 +45,17 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
       </label>
       <div className="relative">
         <select
-          className={`w-full appearance-none rounded-xl px-4 py-2.5 text-sm outline-none transition-all duration-200 cursor-pointer font-medium ${
+          className={`w-full appearance-none rounded-lg px-4 py-2.5 text-sm outline-none transition-all duration-200 cursor-pointer font-medium shadow-sm ${
             isActive
-              ? "bg-primary/10 border border-primary/30 text-foreground focus:border-primary/60 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)]"
-              : "bg-black/40 border border-white/10 text-foreground focus:border-primary/50 focus:shadow-[0_0_0_3px_rgba(99,102,241,0.12)] hover:border-white/20"
+              ? "bg-primary/5 border border-primary/30 text-primary focus:border-primary/60"
+              : "bg-white border border-black/10 text-foreground focus:border-primary/50 hover:border-black/20"
           }`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
-          <option value="" className="bg-[#16161f]">{allLabel}</option>
+          <option value="" className="bg-white">{allLabel}</option>
           {options.map((s) => (
-            <option key={s} value={s} className="bg-[#16161f]">{s}</option>
+            <option key={s} value={s} className="bg-white">{s}</option>
           ))}
         </select>
         <ChevronDown
@@ -76,7 +76,7 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-primary/8 border border-primary/20 rounded-lg w-fit">
+            <div className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-md w-fit shadow-sm">
               <span className="text-[10px] font-bold text-primary truncate max-w-[140px]">{value}</span>
               <button
                 onClick={() => onChange("")}
@@ -108,10 +108,10 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
   const activeCount = [filters.specialization, filters.group, filters.expertise].filter(Boolean).length;
 
   return (
-    <div className="bg-card/80 backdrop-blur-xl border border-white/6 rounded-2xl p-6 shadow-xl">
+    <div className="paper-card p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="flex items-center gap-2 font-bold text-foreground text-sm">
+        <h2 className="flex items-center gap-2 font-bold text-foreground text-sm font-serif">
           <Filter size={15} className="text-primary" />
           Filters
           <AnimatePresence>
@@ -131,7 +131,7 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
         {activeCount > 0 && (
           <button
             onClick={onClear}
-            className="text-xs font-semibold text-muted-foreground hover:text-rose-400 transition-colors flex items-center gap-1"
+            className="text-xs font-semibold text-muted-foreground hover:text-rose-600 transition-colors flex items-center gap-1"
           >
             Clear all <X size={11} strokeWidth={2.5} />
           </button>

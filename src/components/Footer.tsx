@@ -11,22 +11,19 @@ const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-background relative overflow-hidden">
-      {/* Subtle background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/10 blur-[100px] rounded-full pointer-events-none opacity-30" />
-
+    <footer className="border-t border-black/5 bg-background relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 py-12 relative z-10">
         {/* Top row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pb-10 border-b border-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pb-10 border-b border-black/5">
 
           {/* Brand */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center gap-2.5 w-fit group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 group-hover:shadow-primary/40 transition-all duration-300">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 group-hover:shadow-primary/40 transition-all duration-300">
                 <Zap size={15} className="fill-current" />
               </div>
-              <span className="font-bold text-foreground">
-                IT<span className="text-primary">Connect</span>
+              <span className="font-bold text-foreground font-serif">
+                IT<span className="text-primary font-serif">Connect</span>
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
@@ -34,8 +31,8 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
               </span>
               Live data · Updates every 60s
             </div>
@@ -88,7 +85,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all duration-200"
+                className="w-8 h-8 rounded-lg bg-black/5 hover:bg-black/10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all duration-200"
               >
                 <GithubIcon width={15} height={15} />
               </a>
@@ -97,7 +94,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all duration-200"
+                className="w-8 h-8 rounded-lg bg-black/5 hover:bg-black/10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all duration-200"
               >
                 <LinkedinIcon width={15} height={15} />
               </a>
@@ -108,7 +105,7 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
-            Built with <Heart size={11} className="text-rose-500 fill-current mx-0.5" /> for the IT community
+            Built with <Heart size={11} className="text-rose-600 fill-current mx-0.5" /> for the IT community
           </div>
           <p>© {new Date().getFullYear()} IT Department. All rights reserved.</p>
         </div>

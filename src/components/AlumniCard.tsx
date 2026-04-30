@@ -14,12 +14,12 @@ const LinkedinIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const AVATAR_COLORS = [
-  "from-indigo-500 to-violet-500",
-  "from-cyan-500 to-blue-500",
-  "from-emerald-500 to-teal-500",
-  "from-amber-500 to-orange-500",
-  "from-rose-500 to-pink-500",
-  "from-pink-500 to-purple-500",
+  "bg-indigo-100 text-indigo-700",
+  "bg-cyan-100 text-cyan-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-amber-100 text-amber-700",
+  "bg-rose-100 text-rose-700",
+  "bg-purple-100 text-purple-700",
 ];
 
 function getAvatarColor(name: string) {
@@ -30,25 +30,17 @@ function getAvatarColor(name: string) {
 
 function getSpecStyle(spec: string) {
   const s = spec.toUpperCase();
-  if (s.includes("AIML") || s.includes("AI")) return "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20";
-  if (s.includes("FSD") || s.includes("FULL")) return "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20";
-  return "bg-white/5 text-muted-foreground border border-white/10";
+  if (s.includes("AIML") || s.includes("AI")) return "bg-indigo-50 text-indigo-700 border border-indigo-200";
+  if (s.includes("FSD") || s.includes("FULL")) return "bg-cyan-50 text-cyan-700 border border-cyan-200";
+  return "bg-black/5 text-muted-foreground border border-black/10";
 }
 
 function getInitials(name: string) {
   return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
 
-const SKILL_COLORS = [
-  "bg-white/5 text-muted-foreground border-white/10",
-  "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  "bg-purple-500/10 text-purple-400 border-purple-500/20",
-];
-
 export default function AlumniCard({ student, index }: { student: Student; index: number }) {
-  const avatarGradient = getAvatarColor(student.name);
+  const avatarClass = getAvatarColor(student.name);
   const topSkills = student.expertise.slice(0, 3);
 
   const itemVariant = {
@@ -69,17 +61,14 @@ export default function AlumniCard({ student, index }: { student: Student; index
         whileHover={{ y: -4 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
         style={{ willChange: "transform" }}
-        className="bg-card border border-white/5 rounded-2xl p-6 relative overflow-hidden cursor-pointer transition-all duration-300 group-hover:border-primary/30 group-hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(99,102,241,0.08)]"
+        className="paper-card p-6 relative overflow-hidden cursor-pointer transition-all duration-300 group-hover:shadow-lg group-hover:border-black/10"
       >
-        {/* Hover glow */}
-        <div className="absolute -top-20 -right-20 w-44 h-44 bg-primary/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
         {/* Header */}
         <div className="flex items-start gap-4 mb-4 relative z-10">
           {/* Avatar with ring on hover */}
           <div className="relative shrink-0">
             <div
-              className={`w-14 h-14 rounded-xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-white font-bold text-lg shadow-inner transition-all duration-300 group-hover:ring-2 group-hover:ring-primary/40 group-hover:ring-offset-2 group-hover:ring-offset-card`}
+              className={`w-14 h-14 rounded-md ${avatarClass} flex items-center justify-center font-bold text-lg shadow-sm border border-black/5 transition-all duration-300 group-hover:rotate-3`}
             >
               {getInitials(student.name)}
             </div>
@@ -87,7 +76,7 @@ export default function AlumniCard({ student, index }: { student: Student; index
 
           {/* Name & Spec */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-foreground text-base truncate mb-1 group-hover:text-primary transition-colors duration-200">
+            <h3 className="font-bold text-foreground text-base truncate mb-1 group-hover:text-primary transition-colors duration-200 font-serif">
               {student.name}
             </h3>
             <span className={`inline-block px-2.5 py-0.5 rounded-md text-[0.68rem] font-bold tracking-wider uppercase ${getSpecStyle(student.specialization)}`}>
@@ -117,12 +106,12 @@ export default function AlumniCard({ student, index }: { student: Student; index
         {topSkills.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-5 relative z-10">
             {topSkills.map((skill, i) => (
-              <span key={skill} className={`px-2.5 py-1 rounded-md text-xs font-medium border ${SKILL_COLORS[i % SKILL_COLORS.length]}`}>
+              <span key={skill} className="px-2.5 py-1 rounded-md text-xs font-medium bg-black/5 text-muted-foreground border border-black/5">
                 {skill}
               </span>
             ))}
             {student.expertise.length > 3 && (
-              <span className="px-2 py-1 rounded-md text-xs font-medium bg-white/5 text-muted-foreground border border-white/5">
+              <span className="px-2 py-1 rounded-md text-xs font-medium bg-black/5 text-muted-foreground border border-black/5">
                 +{student.expertise.length - 3}
               </span>
             )}
@@ -130,7 +119,7 @@ export default function AlumniCard({ student, index }: { student: Student; index
         )}
 
         {/* Divider */}
-        <div className="h-px w-full bg-white/5 mb-4 group-hover:bg-primary/15 transition-colors duration-300 relative z-10" />
+        <div className="h-px w-full bg-black/5 mb-4 group-hover:bg-primary/20 transition-colors duration-300 relative z-10" />
 
         {/* Social Links */}
         <div className="flex items-center gap-2 relative z-10">
@@ -140,7 +129,7 @@ export default function AlumniCard({ student, index }: { student: Student; index
               tabIndex={0}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(student.linkedin, "_blank", "noopener,noreferrer"); }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); window.open(student.linkedin, "_blank", "noopener,noreferrer"); } }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold hover:bg-indigo-500/20 hover:text-indigo-300 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-all cursor-pointer"
             >
               <LinkedinIcon width={13} height={13} />
               LinkedIn
@@ -152,7 +141,7 @@ export default function AlumniCard({ student, index }: { student: Student; index
               tabIndex={0}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(student.github, "_blank", "noopener,noreferrer"); }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); window.open(student.github, "_blank", "noopener,noreferrer"); } }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-muted-foreground text-xs font-semibold hover:bg-white/10 hover:text-foreground transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/5 border border-black/5 text-foreground text-xs font-semibold hover:bg-black/10 transition-all cursor-pointer"
             >
               <GithubIcon width={13} height={13} />
               GitHub
@@ -162,14 +151,14 @@ export default function AlumniCard({ student, index }: { student: Student; index
             <a
               href={`mailto:${student.email}`}
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/8 text-muted-foreground text-xs font-medium hover:text-foreground hover:bg-white/10 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/5 border border-black/5 text-muted-foreground text-xs font-medium hover:text-foreground hover:bg-black/10 transition-all"
             >
               <Mail size={13} />
-              Reach out via email
+              Email
             </a>
           )}
           {!student.linkedin && !student.github && !student.email && (
-            <span className="text-xs text-muted-foreground/40 italic">No links available</span>
+            <span className="text-xs text-muted-foreground/50 italic">No links available</span>
           )}
         </div>
       </motion.div>

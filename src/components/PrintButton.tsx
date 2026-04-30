@@ -6,7 +6,7 @@ export default function PrintButton() {
   return (
     <button
       onClick={() => window.print()}
-      className="inline-flex items-center gap-2 bg-white/5 border border-white/10 hover:bg-white/10 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+      className="inline-flex items-center gap-2 bg-white border border-black/10 hover:bg-black/5 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
     >
       <Printer size={16} />
       Print / Save PDF
