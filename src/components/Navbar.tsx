@@ -16,19 +16,14 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
-  // Scroll-aware border
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Escape key closes mobile menu
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
     window.addEventListener("keydown", onKey);
@@ -43,8 +38,8 @@ export default function Navbar() {
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className={`sticky top-0 z-50 h-16 flex items-center transition-all duration-300 ${
           scrolled
-            ? "bg-white/90 backdrop-blur-xl border-b border-black/5 shadow-sm"
-            : "bg-white/60 backdrop-blur-md border-b border-transparent"
+            ? "bg-[#fffef9]/95 backdrop-blur-xl border-b border-[#c9973a]/20 shadow-[0_1px_12px_rgba(60,50,30,0.08)]"
+            : "bg-[#fffef9]/80 backdrop-blur-md border-b border-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 w-full flex items-center justify-between">
@@ -55,12 +50,13 @@ export default function Navbar() {
               whileHover={{ rotate: 12, scale: 1.1 }}
               whileTap={{ scale: 0.92 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20"
+              className="w-9 h-9 rounded-md bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20 ring-1 ring-[#c9973a]/25"
             >
               <Zap size={18} className="fill-current" />
             </motion.div>
-            <span className="font-bold text-lg text-foreground tracking-tight font-serif">
-              IT<span className="text-primary font-serif">Connect</span>
+            <span className="font-bold text-lg text-foreground tracking-tight">
+              <span className="font-serif">IT</span>
+              <span className="font-script text-primary" style={{ fontSize: "1.15rem" }}>Connect</span>
             </span>
           </Link>
 
@@ -72,18 +68,26 @@ export default function Navbar() {
                 <Link
                   key={href}
                   href={href}
-                  className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 ${
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
                     isActive
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {isActive && (
-                    <motion.div
-                      layoutId="nav-pill"
-                      className="absolute inset-0 bg-black/5 rounded-lg"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
+                    <>
+                      <motion.div
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-primary/8 rounded-md"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                      {/* Teal bottom underline */}
+                      <motion.div
+                        layoutId="nav-underline"
+                        className="absolute bottom-0 left-3 right-3 h-0.5 bg-primary rounded-full"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    </>
                   )}
                   <Icon size={15} className="relative z-10" />
                   <span className="relative z-10">{label}</span>
@@ -95,13 +99,13 @@ export default function Navbar() {
           {/* Desktop CTA + Mobile Hamburger */}
           <div className="flex items-center gap-3">
             <motion.div
-              whileHover={{ scale: 1.04 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
               className="hidden md:block"
             >
               <Link
                 href="/directory"
-                className="flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                className="flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-md text-sm font-semibold shadow-[2px_2px_0_rgba(60,50,30,0.15)] border border-[#3d6b78] hover:shadow-[1px_1px_0_rgba(60,50,30,0.15)] hover:translate-x-px hover:translate-y-px transition-all duration-150 cursor-pointer"
               >
                 Explore Students
               </Link>
@@ -131,7 +135,7 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer — Option A: Clean & Minimal */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -175,15 +179,14 @@ export default function Navbar() {
                   );
                 })}
 
-                <div className="pt-2 border-t border-black/5 mt-2">
-                  <Link
-                    href="/directory"
-                    className="flex items-center justify-center gap-2 w-full bg-primary text-white px-5 py-3 rounded-xl text-sm font-semibold shadow-md"
-                  >
-                    <Zap size={15} className="fill-current" />
-                    Explore Students
-                  </Link>
-                </div>
+                <div className="perf-divider mt-2" />
+                <Link
+                  href="/directory"
+                  className="flex items-center justify-center gap-2 w-full bg-primary text-white px-5 py-3 rounded-xl text-sm font-semibold shadow-md"
+                >
+                  <Zap size={15} className="fill-current" />
+                  Explore Students
+                </Link>
               </div>
             </motion.div>
           </>

@@ -38,9 +38,9 @@ export default function SearchBar({
     <div className="relative w-full group">
       {/* Search icon */}
       <div
-        className={`absolute top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none transition-colors duration-200 group-focus-within:text-primary ${
-          large ? "left-5" : "left-4"
-        }`}
+        className={`absolute top-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-200 ${
+          focused ? "text-primary" : "text-muted-foreground"
+        } ${large ? "left-5" : "left-4"}`}
       >
         <Search size={large ? 20 : 17} />
       </div>
@@ -55,9 +55,18 @@ export default function SearchBar({
         onBlur={() => setFocused(false)}
         placeholder={placeholder}
         autoComplete="off"
-        className={`w-full bg-white border text-foreground placeholder-muted-foreground/60 outline-none transition-all duration-300 focus:border-primary/60 focus:shadow-[0_0_0_3px_rgba(84,110,122,0.15)] shadow-sm ${
-          focused ? "border-primary/40" : "border-black/10 hover:border-black/20"
-        } ${large ? "pl-14 pr-32 py-4 text-base rounded-2xl" : "pl-11 pr-24 py-3 text-sm rounded-xl"}`}
+        className={`w-full text-foreground placeholder-muted-foreground/60 outline-none transition-all duration-300 ${
+          large ? "pl-14 pr-32 py-4 text-base rounded-md" : "pl-11 pr-24 py-3 text-sm rounded-md"
+        }`}
+        style={{
+          background: "var(--color-card)",
+          border: focused
+            ? "1.5px solid var(--color-primary)"
+            : "1.5px solid rgba(60,50,30,0.14)",
+          boxShadow: focused
+            ? "0 0 0 3px rgba(90,121,133,0.12), 1px 1px 0 rgba(60,50,30,0.08)"
+            : "1px 1px 0 rgba(60,50,30,0.06)",
+        }}
       />
 
       {/* Right side: keyboard shortcut OR clear button */}
@@ -66,7 +75,7 @@ export default function SearchBar({
           large ? "mr-4" : "mr-3"
         }`}
       >
-        {/* Keyboard shortcut hint */}
+        {/* Typewriter shortcut keys */}
         <AnimatePresence>
           {showShortcut && (
             <motion.div
@@ -76,12 +85,10 @@ export default function SearchBar({
               transition={{ duration: 0.15 }}
               className="hidden sm:flex items-center gap-1 pointer-events-none"
             >
-              <kbd className="px-1.5 py-0.5 rounded bg-black/5 border border-black/10 text-muted-foreground text-[10px] font-mono font-bold leading-none">
+              <span className="typewriter-key">
                 {typeof navigator !== "undefined" && navigator.platform.includes("Mac") ? "⌘" : "Ctrl"}
-              </kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-black/5 border border-black/10 text-muted-foreground text-[10px] font-mono font-bold leading-none">
-                K
-              </kbd>
+              </span>
+              <span className="typewriter-key">K</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -94,9 +101,10 @@ export default function SearchBar({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.7 }}
               transition={{ duration: 0.15 }}
-              className={`flex items-center justify-center rounded-full bg-black/5 hover:bg-black/10 text-muted-foreground hover:text-foreground transition-all ${
+              className={`flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground transition-all ${
                 large ? "w-7 h-7" : "w-6 h-6"
               }`}
+              style={{ background: "rgba(60,50,30,0.07)" }}
               onClick={() => { onChange(""); inputRef.current?.focus(); }}
               aria-label="Clear search"
               type="button"

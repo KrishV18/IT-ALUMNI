@@ -67,6 +67,7 @@ export interface Student {
   github: string;
   expertise: string[];
   gid: number;
+  image?: string;
   // Enriched from other sheets
   results?: StudentResult;
   finalResults?: FinalResult[];

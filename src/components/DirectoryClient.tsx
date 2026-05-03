@@ -27,7 +27,6 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Close mobile filter sheet on body scroll lock
   useEffect(() => {
     if (mobileFiltersOpen) {
       document.body.style.overflow = "hidden";
@@ -77,29 +76,47 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
   const hasAnyFilter = search || activeFilterCount > 0;
 
   return (
-    <div className="bg-background min-h-screen pb-24">
-      {/* Page Header */}
-      <div className="border-b border-black/5 bg-white pt-10 pb-8 px-6 shadow-sm">
+    <div className="min-h-screen pb-24" style={{ background: "var(--color-background)" }}>
+
+      {/* Page Header — Yearbook chapter heading */}
+      <div
+        className="pt-10 pb-8 px-6 relative overflow-hidden"
+        style={{
+          background: "var(--color-card)",
+          borderBottom: "1px solid rgba(60,50,30,0.10)",
+          boxShadow: "0 1px 12px rgba(60,50,30,0.06)",
+        }}
+      >
+        {/* Left margin accent */}
+        <div
+          className="absolute left-0 top-0 bottom-0 w-1 hidden lg:block"
+          style={{ background: "var(--color-primary)", opacity: 0.5 }}
+        />
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <p className="section-label mb-2">
-              IT Department
-            </p>
-            <h1 className="text-4xl md:text-5xl font-black mb-2 tracking-tight text-foreground font-serif">
+            <p className="section-label mb-2">IT Department</p>
+            <h1
+              className="text-4xl md:text-5xl font-black mb-2 tracking-tight font-serif"
+              style={{ color: "var(--color-ink)" }}
+            >
               Student Directory
             </h1>
-            <p className="text-muted-foreground text-sm mb-8 flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-8">
               <span className="relative flex h-2.5 w-2.5 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
-              {students.length} students · live from Google Sheets
-            </p>
+              <p className="text-muted-foreground text-sm font-serif italic">
+                {students.length} students · live from Google Sheets
+              </p>
+            </div>
             <div className="max-w-2xl">
               <SearchBar value={search} onChange={setSearch} />
             </div>
           </motion.div>
         </div>
+        {/* Gold micro-rule at bottom */}
+        <div className="gold-rule mt-8" />
       </div>
 
       {/* Main Content */}
@@ -119,7 +136,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               initial={{ opacity: 0, x: -4 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.25 }}
-              className="text-muted-foreground text-sm font-medium"
+              className="text-muted-foreground text-sm font-medium font-serif italic"
             >
               {filtered.length === students.length
                 ? `Showing all ${students.length} students`
@@ -132,7 +149,11 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setMobileFiltersOpen(true)}
-                className="lg:hidden flex items-center gap-2 text-sm font-semibold text-foreground bg-white border border-black/10 hover:border-black/20 px-3.5 py-2 rounded-xl transition-all shadow-sm"
+                className="lg:hidden flex items-center gap-2 text-sm font-semibold text-foreground border hover:border-[rgba(60,50,30,0.25)] px-3.5 py-2 rounded-md transition-all shadow-sm"
+                style={{
+                  background: "var(--color-card)",
+                  borderColor: "rgba(60,50,30,0.14)",
+                }}
               >
                 <Filter size={14} className="text-primary" />
                 Filters
@@ -146,7 +167,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               {hasAnyFilter && (
                 <button
                   onClick={handleClear}
-                  className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-indigo-700 bg-primary/10 hover:bg-primary/20 px-3 py-2 rounded-xl transition-all"
+                  className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15 px-3 py-2 rounded-md transition-all border border-primary/15"
                 >
                   <X size={13} />
                   Clear
@@ -165,18 +186,27 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center py-20 px-6 text-center bg-white border border-dashed border-black/10 rounded-3xl shadow-sm"
+              className="flex flex-col items-center justify-center py-20 px-6 text-center rounded-md"
+              style={{
+                background: "var(--color-card)",
+                border: "2px dashed rgba(60,50,30,0.14)",
+              }}
             >
-              <div className="w-16 h-16 bg-black/5 rounded-2xl flex items-center justify-center mb-4 text-muted-foreground">
+              <div
+                className="w-16 h-16 rounded-md flex items-center justify-center mb-4 text-muted-foreground"
+                style={{ background: "rgba(60,50,30,0.06)" }}
+              >
                 <SearchX size={30} />
               </div>
-              <p className="text-lg font-bold mb-2 text-foreground font-serif">No students found</p>
+              <p className="text-lg font-bold mb-2 font-serif" style={{ color: "var(--color-ink)" }}>
+                No students found
+              </p>
               <p className="text-muted-foreground text-sm mb-6 max-w-xs leading-relaxed">
                 Nothing matched your search or filters. Try adjusting them.
               </p>
               <button
                 onClick={handleClear}
-                className="bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                className="bg-primary/10 hover:bg-primary/20 border border-primary/20 text-primary px-5 py-2.5 rounded-md text-sm font-semibold transition-all"
               >
                 Clear all filters
               </button>
@@ -193,11 +223,10 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
         </div>
       </div>
 
-      {/* Mobile Filter Bottom Sheet */}
+      {/* Mobile Filter Bottom Sheet — stays clean/minimal */}
       <AnimatePresence>
         {mobileFiltersOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               key="filter-backdrop"
               initial={{ opacity: 0 }}
@@ -207,8 +236,6 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileFiltersOpen(false)}
             />
-
-            {/* Sheet */}
             <motion.div
               key="filter-sheet"
               initial={{ y: "100%" }}
@@ -217,7 +244,6 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
               transition={{ type: "spring", stiffness: 350, damping: 35 }}
               className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-black/10 rounded-t-3xl shadow-2xl max-h-[85vh] overflow-y-auto"
             >
-              {/* Sheet handle */}
               <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-black/5 sticky top-0 bg-white z-10">
                 <h2 className="font-bold text-foreground font-serif">Filters</h2>
                 <button

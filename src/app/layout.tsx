@@ -33,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${caveat.variable}`}>
-      <body className="font-sans bg-background text-foreground antialiased min-h-screen flex flex-col">
+      <body className="font-sans bg-background text-foreground antialiased min-h-screen flex flex-col notebook-bg">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

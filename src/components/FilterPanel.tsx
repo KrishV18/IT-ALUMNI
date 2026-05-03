@@ -45,17 +45,24 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
       </label>
       <div className="relative">
         <select
-          className={`w-full appearance-none rounded-lg px-4 py-2.5 text-sm outline-none transition-all duration-200 cursor-pointer font-medium shadow-sm ${
+          className={`w-full appearance-none rounded-sm px-4 py-2.5 text-sm outline-none transition-all duration-200 cursor-pointer font-medium ${
             isActive
-              ? "bg-primary/5 border border-primary/30 text-primary focus:border-primary/60"
-              : "bg-white border border-black/10 text-foreground focus:border-primary/50 hover:border-black/20"
+              ? "text-primary"
+              : "text-foreground"
           }`}
+          style={{
+            background: isActive ? "rgba(90,121,133,0.05)" : "var(--color-card)",
+            border: isActive
+              ? "1.5px solid rgba(90,121,133,0.35)"
+              : "1.5px solid rgba(60,50,30,0.14)",
+            boxShadow: "1px 1px 0 rgba(60,50,30,0.06)",
+          }}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
-          <option value="" className="bg-white">{allLabel}</option>
+          <option value="">{allLabel}</option>
           {options.map((s) => (
-            <option key={s} value={s} className="bg-white">{s}</option>
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
         <ChevronDown
@@ -66,7 +73,7 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
         />
       </div>
 
-      {/* Active chip */}
+      {/* Active chip — warm sticky-note style */}
       <AnimatePresence>
         {isActive && (
           <motion.div
@@ -76,12 +83,21 @@ function SelectField({ label, value, onChange, options, allLabel }: SelectFieldP
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-md w-fit shadow-sm">
-              <span className="text-[10px] font-bold text-primary truncate max-w-[140px]">{value}</span>
+            <div
+              className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-sm w-fit shadow-sm"
+              style={{
+                background: "#fdf4e0",
+                border: "1px solid rgba(201,151,58,0.30)",
+              }}
+            >
+              <span className="text-[10px] font-bold truncate max-w-[140px]" style={{ color: "#8a6820" }}>
+                {value}
+              </span>
               <button
                 onClick={() => onChange("")}
                 aria-label={`Remove ${label} filter`}
-                className="ml-0.5 text-primary/60 hover:text-primary transition-colors"
+                className="ml-0.5 transition-colors"
+                style={{ color: "#c9973a" }}
               >
                 <X size={10} strokeWidth={3} />
               </button>
@@ -108,10 +124,18 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
   const activeCount = [filters.specialization, filters.group, filters.expertise].filter(Boolean).length;
 
   return (
-    <div className="paper-card p-6">
+    <div
+      className="p-6"
+      style={{
+        background: "var(--color-card)",
+        border: "1px solid rgba(60,50,30,0.10)",
+        borderRadius: "6px",
+        boxShadow: "0 4px 16px rgba(60,50,30,0.06)",
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="flex items-center gap-2 font-bold text-foreground text-sm font-serif">
+        <h2 className="flex items-center gap-2 font-bold text-sm font-serif" style={{ color: "var(--color-ink)" }}>
           <Filter size={15} className="text-primary" />
           Filters
           <AnimatePresence>
@@ -137,6 +161,9 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
           </button>
         )}
       </div>
+
+      {/* Perforated divider */}
+      <div className="perf-divider mb-5" />
 
       <div className="space-y-5">
         <SelectField
