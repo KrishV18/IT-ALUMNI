@@ -1,48 +1,54 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — IT Connect Yearbook Palette (locked)
+   ══════════════════════════════════════════════════════════════════ */
+
 @theme {
-  /* ── Core palette (warm yearbook tones) ────────────────────────── */
-  --color-background: #faf8f4;
-  --color-foreground: #2c2416;
-  --color-muted: #e8e2d8;
-  --color-muted-foreground: #6b5e4e;
-  --color-card: #fffef9;
-  --color-card-hover: #fdf9f0;
-  --color-border: rgba(60, 50, 30, 0.10);
-  --color-border-hover: rgba(60, 50, 30, 0.18);
+  /* ── Core yearbook palette ──────────────────────────────────────── */
+  --color-teal:        #2d6060;   /* headers, primary actions, active */
+  --color-gold:        #e8a830;   /* borders, accents, highlights      */
+  --color-blush:       #e8a0a0;   /* secondary cards, internship tab   */
+  --color-cream:       #fff9e0;   /* sticky note, signature bg         */
+  --color-ink:         #1a1a1a;   /* body text                         */
 
-  /* ── Brand ─────────────────────────────────────────────────────── */
-  --color-primary: #5a7985;
+  /* ── Layered paper backgrounds ─────────────────────────────────── */
+  --color-bg-1:        #faf8f3;   /* root / hero                       */
+  --color-bg-2:        #f3f0e8;   /* section alternates                */
+  --color-bg-3:        #eceadf;   /* deepest paper tone                */
+
+  /* ── Semantic aliases (used by components) ─────────────────────── */
+  --color-background:         var(--color-bg-1);
+  --color-foreground:         var(--color-ink);
+  --color-primary:            var(--color-teal);
   --color-primary-foreground: #ffffff;
-  --color-secondary: #c8956c;
-  --color-accent: #e9edc9;
+  --color-card:               var(--color-bg-1);
+  --color-card-hover:         var(--color-bg-2);
+  --color-muted:              #dedad0;
+  --color-muted-foreground:   #6b5e4e;
+  --color-border:             rgba(45, 96, 96, 0.15);
+  --color-border-hover:       rgba(45, 96, 96, 0.30);
 
-  /* ── Status ─────────────────────────────────────────────────────── */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
+  /* ── Yearbook profile accent colors ────────────────────────────── */
+  --color-yearbook-frame:    #e8a830;   /* gold border frame            */
+  --color-yearbook-header:   #2d6060;   /* teal header band             */
+  --color-yearbook-teal:     #2d6060;
+  --color-yearbook-sticky:   #fff9e0;   /* cream sticky note            */
+  --color-yearbook-blush:    #f9e0e0;   /* folder / internship tab      */
+  --color-yearbook-pink:     #f9e0e0;
+  --color-yearbook-manila-tab: #fef9ed;
+  --color-yearbook-polaroid-frame: #2d6060;
+  --color-yearbook-blue-triangle: #2d6060;
 
-  /* ── Yearbook profile accent colors (profile page only) ─────────── */
-  --color-yearbook-frame: #fbbd32;
-  --color-yearbook-header: #38342f;
-  --color-yearbook-teal: #5a7985;
-  --color-yearbook-polaroid-frame: #8db3c6;
-  --color-yearbook-manila-tab: #fefbf6;
-  --color-yearbook-pink: #fadadd;
-  --color-yearbook-sticky: #fdeab4;
-  --color-yearbook-blue-triangle: #8eb7ce;
+  /* ── Typography variables ─────────────────────────────────────── */
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-sans),    ui-sans-serif, system-ui, sans-serif;
+  --font-script:  var(--font-script),  cursive;
+  /* Keep --font-serif as alias for --font-display so old classes still work */
+  --font-serif:   var(--font-display), ui-sans-serif, system-ui, sans-serif;
 
-  /* ── New global yearbook utility tokens ─────────────────────────── */
-  --color-ink: #2c2416;
-  --color-paper-line: rgba(60, 50, 30, 0.055);
-  --color-gold-accent: #c9973a;        /* micro-accent — used sparingly */
-  --color-stamp-teal: #3d6b78;
-  --color-stamp-indigo: #3b4fa0;
-  --color-sepia-shadow: rgba(60, 50, 30, 0.12);
-
-  /* ── Typography ─────────────────────────────────────────────────── */
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
-  --font-script: var(--font-script), cursive;
+  /* ── Motion ──────────────────────────────────────────────────── */
+  --ease-physical: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -50,7 +56,7 @@
    ══════════════════════════════════════════════════════════════════ */
 
 @layer base {
-  * {
+  *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -61,16 +67,18 @@
   }
 
   body {
-    background-color: var(--color-background);
+    background-color: var(--color-bg-1);
+    /* 3% SVG noise paper grain — makes it feel physical */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     color: var(--color-ink);
     font-family: var(--font-sans);
-    line-height: 1.6;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
   }
 }
 
@@ -79,127 +87,137 @@
    ══════════════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--color-background); }
+::-webkit-scrollbar-track { background: var(--color-bg-2); }
 ::-webkit-scrollbar-thumb { background: var(--color-muted); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-muted-foreground); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
 
 /* ══════════════════════════════════════════════════════════════════
-   SHIMMER SKELETON
+   SHIMMER SKELETON — cream/gold tones
    ══════════════════════════════════════════════════════════════════ */
 
 @keyframes shimmer-sweep {
   0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  100% { background-position:  200% center; }
 }
 
 .shimmer {
   background: linear-gradient(
     90deg,
-    rgba(60, 50, 30, 0.04) 25%,
-    rgba(60, 50, 30, 0.09) 50%,
-    rgba(60, 50, 30, 0.04) 75%
+    #eceadf 25%,
+    #f3f0e8 50%,
+    #eceadf 75%
   );
   background-size: 200% auto;
-  animation: shimmer-sweep 1.8s ease-in-out infinite;
-  border-radius: 8px;
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
+  border-radius: 4px;
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   GLOBAL UTILITY CLASSES
+   TYPOGRAPHY UTILITY CLASSES
    ══════════════════════════════════════════════════════════════════ */
 
-/* ── Section label ───────────────────────────────────────────────── */
-.section-label {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-primary);
+/* Display — Syne 700–800, used for heroes, section titles, card names */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-/* ── Paper card ──────────────────────────────────────────────────── */
+/* Section label caps — DM Sans 600, 11px, all caps, tracked */
+.label-caps {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;     /* 11px */
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+}
+
+/* Legacy alias so old .section-label still works */
+.section-label {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-teal);
+}
+
+/* Handwritten — Caveat ONLY for signature quote + footer tagline */
+.handwritten {
+  font-family: var(--font-script);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   GLOBAL CARD & LAYOUT UTILITIES
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Gold-bordered yearbook card */
+.gold-card {
+  background-color: var(--color-bg-1);
+  border: 2px solid var(--color-gold);
+  border-radius: 6px;
+  box-shadow:
+    0 4px 16px rgba(45, 96, 96, 0.08),
+    0 1px 4px rgba(45, 96, 96, 0.04);
+  transition: box-shadow var(--ease-physical) 0.25s,
+              transform var(--ease-physical) 0.25s;
+}
+
+/* Legacy paper-card — keep for backward compat */
 .paper-card {
   background-color: var(--color-card);
   border-radius: 6px;
   box-shadow:
-    0 4px 6px -1px rgba(60, 50, 30, 0.06),
-    0 2px 4px -1px rgba(60, 50, 30, 0.03);
+    0 4px 6px -1px rgba(45, 96, 96, 0.06),
+    0 2px 4px -1px rgba(45, 96, 96, 0.03);
   border: 1px solid var(--color-border);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 0.25s var(--ease-physical),
+              transform  0.25s var(--ease-physical);
 }
 
 /* ── CGPA Bar animation ──────────────────────────────────────────── */
 @keyframes cgpa-fill {
   from { width: 0; }
 }
-
 .cgpa-bar {
   animation: cgpa-fill 0.9s ease-out forwards;
 }
 
-/* ══════════════════════════════════════════════════════════════════
-   YEARBOOK UTILITY SYSTEM
-   ══════════════════════════════════════════════════════════════════ */
-
-/* ── Notebook-paper ruled lines background ───────────────────────── */
-/* Applied globally — very low opacity, reads as professional texture */
-.notebook-bg {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent,
-    transparent 29px,
-    var(--color-paper-line) 29px,
-    var(--color-paper-line) 30px
-  );
-}
-
-/* ── Gold micro-rule — ONLY footer top & one section divider ────── */
+/* ── Gold micro-rule ─────────────────────────────────────────────── */
 .gold-rule {
-  height: 1px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     transparent 5%,
-    var(--color-gold-accent) 40%,
-    var(--color-gold-accent) 60%,
+    var(--color-gold) 40%,
+    var(--color-gold) 60%,
     transparent 95%
   );
-  opacity: 0.40;
+  opacity: 0.60;
 }
 
-/* ── Halftone dot edge — section transitions ─────────────────────── */
-.halftone-edge {
-  position: relative;
-}
-.halftone-edge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48px;
-  background-image: radial-gradient(circle, rgba(60, 50, 30, 0.07) 1px, transparent 1px);
-  background-size: 8px 8px;
-  mask-image: linear-gradient(to bottom, black, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
-  pointer-events: none;
-  z-index: 0;
+/* ── Perforated divider ──────────────────────────────────────────── */
+.perf-divider {
+  border: none;
+  border-top: 2px dashed rgba(45, 96, 96, 0.15);
+  margin: 0.75rem 0;
 }
 
-/* ── Ink-stamp spec badge ────────────────────────────────────────── */
+/* ── Ink-stamp badge ────────────────────────────────────────────── */
 .stamp-badge {
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 0.62rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.10em;
-  border: 2px solid currentColor;
+  border: 1.5px solid currentColor;
   border-radius: 3px;
   padding: 2px 8px;
-  transform: rotate(-2deg);
+  transform: rotate(-1deg);
   display: inline-block;
   opacity: 0.90;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s var(--ease-physical), opacity 0.2s;
   line-height: 1.4;
 }
 .stamp-badge:hover {
@@ -207,39 +225,49 @@
   opacity: 1;
 }
 
-/* ── Perforated paper divider ────────────────────────────────────── */
-.perf-divider {
-  border: none;
-  border-top: 2px dashed rgba(60, 50, 30, 0.12);
-  margin: 0.75rem 0;
-}
-
 /* ── Typewriter key ──────────────────────────────────────────────── */
 .typewriter-key {
   display: inline-block;
   padding: 2px 6px;
   background: var(--color-card);
-  border: 1px solid rgba(60, 50, 30, 0.18);
-  border-bottom: 3px solid rgba(60, 50, 30, 0.22);
+  border: 1px solid rgba(45, 96, 96, 0.18);
+  border-bottom: 3px solid rgba(45, 96, 96, 0.22);
   border-radius: 4px;
   font-family: ui-monospace, 'Courier New', monospace;
   font-size: 0.65rem;
   font-weight: 700;
   color: var(--color-muted-foreground);
   line-height: 1.4;
-  letter-spacing: 0.02em;
+}
+
+/* ── Halftone dot edge ───────────────────────────────────────────── */
+.halftone-edge {
+  position: relative;
+}
+.halftone-edge::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background-image: radial-gradient(circle, rgba(45, 96, 96, 0.06) 1px, transparent 1px);
+  background-size: 8px 8px;
+  mask-image: linear-gradient(to bottom, black, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════
    YEARBOOK PROFILE PAGE STYLES
+   (Preserve layout exactly — only update color tokens)
    ══════════════════════════════════════════════════════════════════ */
 
-/* The outer yellow frame border */
+/* The outer gold frame border */
 .yearbook-frame {
   background: var(--color-yearbook-frame);
   border-radius: 20px;
   padding: 24px;
-  box-shadow: 0 8px 32px rgba(245, 166, 35, 0.25);
+  box-shadow: 0 8px 32px rgba(232, 168, 48, 0.30);
   position: relative;
 }
 
@@ -251,6 +279,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 4px;
+  /* Paper grain on cream body */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 /* Header banner inside the page */
@@ -264,11 +294,11 @@
 }
 
 .yearbook-header h1 {
-  font-family: var(--font-serif);
-  font-weight: 900;
-  font-size: 2.2rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
   color: #ffffff;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
 }
 
 /* Teal background section */
@@ -292,9 +322,9 @@
   left: 24px;
   width: 180px;
   transform: rotate(-3deg);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.4s var(--ease-physical);
   z-index: 10;
-  box-shadow: -2px 4px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: -2px 4px 0 rgba(0, 0, 0, 0.10);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -315,10 +345,10 @@
 .yearbook-polaroid-name {
   width: 100%;
   text-align: center;
-  font-family: var(--font-serif);
-  font-weight: 900;
-  color: #111;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 1rem;
   line-height: 1.2;
 }
 
@@ -346,10 +376,11 @@
 .yearbook-info-list {
   list-style: none;
   padding-left: 12px;
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.65;
   color: #fff;
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
+  font-weight: 400;
 }
 .yearbook-info-list li {
   position: relative;
@@ -365,9 +396,11 @@
   color: #fff;
   text-decoration: underline;
   text-underline-offset: 3px;
+  transition: color 0.15s;
 }
 .yearbook-info-list a:hover {
-  color: #e0f2f1;
+  color: var(--color-gold);
+  text-decoration-color: var(--color-gold);
 }
 
 /* Manila folder tab */
@@ -380,7 +413,6 @@
   z-index: 15;
   transform: rotate(2deg);
 }
-
 .yearbook-folder-tab {
   display: inline-block;
   background: var(--color-yearbook-manila-tab);
@@ -388,28 +420,30 @@
   border-bottom: none;
   border-radius: 8px 16px 0 0;
   padding: 8px 32px;
-  font-family: var(--font-sans);
-  font-weight: 900;
-  font-size: 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
   color: #111;
   margin-left: 20px;
   position: relative;
   top: 3px;
 }
-
 .yearbook-folder-body {
-  background: var(--color-yearbook-pink);
+  background: var(--color-yearbook-blush);
   border: 3px solid #111;
   border-radius: 8px;
   padding: 20px 24px;
-  box-shadow: -4px 6px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: -4px 6px 0 rgba(0, 0, 0, 0.10);
   color: #111;
 }
 .yearbook-folder-body h4 {
-  font-family: var(--font-sans);
-  font-weight: 900;
+  font-family: var(--font-display);
+  font-weight: 700;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin-bottom: 8px;
 }
 
@@ -455,27 +489,29 @@
 }
 
 .yearbook-section h3 {
-  font-family: var(--font-sans);
-  font-weight: 900;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.625rem;   /* 10px */
   text-transform: uppercase;
+  letter-spacing: 0.14em;
   text-align: center;
   margin-bottom: 16px;
   color: #111;
 }
 
-/* Horizontal rule lines inside grid cells to mimic empty lines */
+/* Horizontal rule lines inside grid cells */
 .yearbook-line {
   height: 2px;
   background: #111;
   margin: 12px 0;
-  opacity: 0.2;
+  opacity: 0.15;
 }
 
 /* Item styling */
 .yearbook-item {
-  font-family: var(--font-serif);
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;   /* 14px */
+  line-height: 1.65;
   color: #111;
   margin-bottom: 8px;
   display: flex;
@@ -506,29 +542,32 @@
   padding: 16px;
   position: relative;
   z-index: 2;
-  transform: rotate(-3deg);
+  transform: rotate(-2deg);
+  transition: transform 0.4s var(--ease-physical);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
 }
-
+.yearbook-sticky:hover {
+  transform: rotate(-1deg);
+}
 .yearbook-sticky h3 {
-  font-family: var(--font-sans);
-  font-weight: 900;
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.625rem;
   text-transform: uppercase;
+  letter-spacing: 0.14em;
   margin-bottom: 12px;
   color: #111;
   text-align: left;
 }
-
 .yearbook-sticky p {
   font-family: var(--font-script);
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   line-height: 1.4;
   color: #111;
 }
-
 .yearbook-sticky .signature {
   font-family: var(--font-script);
-  font-size: 2rem;
+  font-size: 1.8rem;
   text-align: right;
   margin-top: 12px;
   color: #111;
@@ -536,7 +575,7 @@
 
 /* Navigation chevrons */
 .yearbook-nav-arrow {
-  background: #555;
+  background: var(--color-teal);
   color: white;
   width: 48px;
   height: 64px;
@@ -545,17 +584,46 @@
   justify-content: center;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s var(--ease-physical);
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 30;
-  border: 2px solid #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20);
 }
-.yearbook-nav-arrow:hover { background: #333; }
+.yearbook-nav-arrow:hover { background: #1e4545; }
 .yearbook-nav-arrow.left  { left: -60px; }
 .yearbook-nav-arrow.right { right: -60px; }
+
+/* Back button hover — page-turn feel */
+.back-btn-link {
+  transition: transform 0.2s var(--ease-physical), color 0.15s;
+}
+.back-btn-link:hover {
+  transform: translateX(-3px);
+  color: var(--color-gold);
+}
+
+/* Social link hover — teal underline slide-in */
+.social-link {
+  position: relative;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.social-link::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--color-teal);
+  transition: width 0.2s var(--ease-physical);
+}
+.social-link:hover::after {
+  width: 100%;
+}
 
 /* ══════════════════════════════════════════════════════════════════
    RESPONSIVE
@@ -602,9 +670,6 @@
   }
   body {
     background: white !important;
-    background-image: none !important;
-  }
-  .notebook-bg {
     background-image: none !important;
   }
   .yearbook-frame {

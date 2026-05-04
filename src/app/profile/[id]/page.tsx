@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const revalidate = 0;
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function getInitials(name: string) {
   return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
@@ -19,39 +19,34 @@ function getBestCGPA(r?: StudentResult): string {
   return vals[vals.length - 1].toFixed(2);
 }
 
-// Paper clip SVG component
+// Paper clip SVG — unchanged
 function PaperClip() {
   return (
     <svg className="yearbook-paperclip" viewBox="0 0 40 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 2C12 2 6 8 6 16V56C6 64 12 70 20 70C28 70 34 64 34 56V20C34 14 30 10 24 10C18 10 14 14 14 20V52" 
+      <path d="M20 2C12 2 6 8 6 16V56C6 64 12 70 20 70C28 70 34 64 34 56V20C34 14 30 10 24 10C18 10 14 14 14 20V52"
             stroke="#111" strokeWidth="4" strokeLinecap="round" fill="none"/>
-      <path d="M20 2C12 2 6 8 6 16V56C6 64 12 70 20 70C28 70 34 64 34 56V20C34 14 30 10 24 10C18 10 14 14 14 20V52" 
+      <path d="M20 2C12 2 6 8 6 16V56C6 64 12 70 20 70C28 70 34 64 34 56V20C34 14 30 10 24 10C18 10 14 14 14 20V52"
             stroke="#ccc" strokeWidth="2" strokeLinecap="round" fill="none"/>
     </svg>
   );
 }
 
-// Push pin SVG component
+// Push pin SVG — unchanged
 function PushPin() {
   return (
     <svg className="yearbook-pin" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Pin shadow */}
       <path d="M18 20 L28 35" stroke="rgba(0,0,0,0.3)" strokeWidth="3" strokeLinecap="round"/>
-      {/* Pin body */}
       <path d="M12 20 C10 16 12 10 16 8 C20 6 26 8 28 12 C30 16 28 22 24 24 C20 26 14 24 12 20 Z" fill="#f8b0bc" stroke="#111" strokeWidth="2"/>
       <path d="M16 12 C18 10 22 10 24 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-      {/* Pin needle */}
       <path d="M18 20 L22 32" stroke="#111" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }
 
-// Helper to render inline empty lines gracefully
 function EmptyInline({ width = "w-32" }: { width?: string }) {
   return <span className={`inline-block border-b-2 border-[#111] opacity-20 ${width} ml-2`} />;
 }
 
-// Helper to render block empty lines gracefully
 function EmptyLines({ count = 3 }: { count?: number }) {
   return (
     <>
@@ -62,24 +57,22 @@ function EmptyLines({ count = 3 }: { count?: number }) {
   );
 }
 
-// ─── Page ──────────────────────────────────────────────────────────────────
+// ─── Page ───────────────────────────────────────────────────────────────────
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const students = await fetchAllStudents();
   const student = students.find((s) => s.id === decodeURIComponent(id)) as Student | undefined;
   if (!student) notFound();
 
-  const hasInternships = student.internships && student.internships.length > 0;
-  const hasActivities = student.activities && student.activities.length > 0;
-  const hasPrizes = student.prizes && student.prizes.length > 0;
+  const hasInternships    = student.internships    && student.internships.length > 0;
+  const hasActivities     = student.activities     && student.activities.length > 0;
+  const hasPrizes         = student.prizes         && student.prizes.length > 0;
   const hasCertifications = student.certifications && student.certifications.length > 0;
 
-  // Find previous/next students for navigation
   const currentIndex = students.findIndex((s) => s.id === decodeURIComponent(id));
-  const prevStudent = currentIndex > 0 ? students[currentIndex - 1] : null;
-  const nextStudent = currentIndex < students.length - 1 ? students[currentIndex + 1] : null;
+  const prevStudent  = currentIndex > 0 ? students[currentIndex - 1] : null;
+  const nextStudent  = currentIndex < students.length - 1 ? students[currentIndex + 1] : null;
 
-  // Get semesters with data for "Courses" section
   const semData: { label: string; value: number }[] = [];
   if (student.results) {
     (["sem1","sem2","sem3","sem4","sem5","sem6","sem7","sem8"] as const).forEach((sem, i) => {
@@ -112,7 +105,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           </Link>
         )}
 
-        {/* ═══ YELLOW FRAME ═══ */}
+        {/* ═══ GOLD FRAME ═══ */}
         <div className="yearbook-frame">
           <div className="yearbook-page">
 
@@ -121,39 +114,54 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
             {/* ── HEADER BANNER ── */}
             <div className="yearbook-header">
-              <Link href="/directory" className="text-white hover:text-gray-300 transition-colors no-print">
+              {/* Back button — translateX(-3px) on hover feels like turning a page */}
+              <Link
+                href="/directory"
+                className="back-btn-link text-white no-print flex items-center"
+                title="Back to Directory"
+              >
                 <ChevronLeft size={32} strokeWidth={4} />
               </Link>
               <h1>Student Profile</h1>
             </div>
 
             {/* ── TOP SECTION: Photo + Info + Folder ── */}
+            {/* Folder card slides in from right with stagger */}
             <div className="yearbook-teal-bg">
               {/* Polaroid Photo */}
               <div className="yearbook-polaroid">
                 <PushPin />
                 <div className="yearbook-polaroid-inner">
                   {student.image ? (
-                     <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
+                    <img src={student.image} alt={student.name} className="w-full h-full object-cover" />
                   ) : (
-                     <span className="text-6xl font-bold font-serif text-[#111] opacity-20">{getInitials(student.name)}</span>
+                    <span className="text-6xl font-bold opacity-20" style={{ fontFamily: "var(--font-display)", color: "#111" }}>
+                      {getInitials(student.name)}
+                    </span>
                   )}
                 </div>
-                <div className="yearbook-polaroid-name">{student.name.split(" ")[0]} {student.name.split(" ")[1] || ""}</div>
+                {/* Student name in Syne 700 */}
+                <div className="yearbook-polaroid-name">
+                  {student.name.split(" ")[0]} {student.name.split(" ")[1] || ""}
+                </div>
               </div>
 
-              {/* Info Bullets */}
+              {/* Info Bullets — DM Sans body text */}
               <ul className="yearbook-info-list">
-                <li>Name: {student.name}</li>
+                <li>Name: <strong style={{ fontFamily: "var(--font-display)", fontWeight: 700 }}>{student.name}</strong></li>
                 <li>Enrollment no.: {student.enrollmentNo || "—"}</li>
-                <li>Email: <a href={`mailto:${student.email}`}>{student.email || "—"}</a></li>
+                <li>Email:{" "}
+                  {student.email ? (
+                    <a href={`mailto:${student.email}`} className="social-link">{student.email}</a>
+                  ) : "—"}
+                </li>
                 <li>Expertise: {student.specialization || "IT"}</li>
                 {student.contact && <li>Contact: {student.contact}</li>}
                 {student.group && <li>Group: {student.group}</li>}
                 {student.linkedin && (
                   <li>
                     LinkedIn:{" "}
-                    <a href={student.linkedin} target="_blank" rel="noopener noreferrer">
+                    <a href={student.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
                       Profile
                     </a>
                   </li>
@@ -161,34 +169,46 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
                 {student.github && (
                   <li>
                     GitHub:{" "}
-                    <a href={student.github} target="_blank" rel="noopener noreferrer">
+                    <a href={student.github} target="_blank" rel="noopener noreferrer" className="social-link">
                       {student.github.replace("https://github.com/", "@")}
                     </a>
                   </li>
                 )}
               </ul>
 
-              {/* Manila Folder */}
-              <div className="yearbook-folder">
+              {/* Manila Folder — slide-in animation via CSS */}
+              <div
+                className="yearbook-folder"
+                style={{
+                  animation: "slideInRight 0.4s cubic-bezier(0.16,1,0.3,1) 0.2s both",
+                }}
+              >
                 <div className="yearbook-folder-tab">PLACEMENT DETAILS</div>
                 <div className="yearbook-folder-body">
-                  <ul className="yearbook-info-list !text-[#111] mb-4">
+                  <ul className="yearbook-info-list" style={{ color: "#111" }}>
                     <li>Company: <EmptyInline width="w-40" /></li>
                     <li>Role: <EmptyInline width="w-32" /></li>
                     <li>Package: <EmptyInline width="w-24" /></li>
                   </ul>
-                  
+
                   <h4>INTERNSHIPS DONE</h4>
                   {hasInternships ? (
                     student.internships!.map((intern, i) => (
-                      <ul key={i} className="yearbook-info-list !text-[#111] mb-3">
+                      <ul
+                        key={i}
+                        className="yearbook-info-list mb-3"
+                        style={{
+                          color: "#111",
+                          animation: `slideInRight 0.35s cubic-bezier(0.16,1,0.3,1) ${0.3 + i * 0.1}s both`,
+                        }}
+                      >
                         <li>Company: {intern.company || <EmptyInline />}</li>
                         {intern.duration && <li>Duration: {intern.duration}</li>}
                         {intern.stipend && <li>Stipend: {intern.stipend}</li>}
                       </ul>
                     ))
                   ) : (
-                    <ul className="yearbook-info-list !text-[#111]">
+                    <ul className="yearbook-info-list" style={{ color: "#111" }}>
                       <li>Company: <EmptyInline width="w-32" /></li>
                       <li>Duration: <EmptyInline width="w-20" /></li>
                       <li>Stipend: <EmptyInline width="w-16" /></li>
@@ -200,10 +220,10 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
             {/* ── GRID SECTIONS ── */}
             <div className="yearbook-grid-container">
-              
+
               {/* LEFT COLUMN */}
               <div className="yearbook-col">
-                
+
                 {/* SKILLS */}
                 <div className="yearbook-section">
                   <h3>SKILLS</h3>
@@ -220,22 +240,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
                   {hasActivities ? (
                     student.activities!.map((act, i) => (
                       <div key={i} className="yearbook-item">
-                        {act.eventName} <span className="text-sm">({act.role})</span>
+                        {act.eventName}{" "}
+                        <span style={{ fontSize: "0.8rem", color: "#6b5e4e" }}>({act.role})</span>
                       </div>
                     ))
                   ) : <EmptyLines count={4} />}
                 </div>
 
-                {/* SIGNATURE QUOTE */}
+                {/* SIGNATURE QUOTE — settles from -2deg to -1deg */}
                 <div className="yearbook-sticky-wrapper">
                   <div className="yearbook-sticky-shadow" />
                   <div className="yearbook-sticky">
                     <h3>SIGNATURE QUOTE</h3>
                     <p>
-                      {student.expertise.length > 0
-                        ? `"Either you run the day, or the day runs you"`
-                        : `"Either you run the day, or the day runs you"`
-                      }
+                      &ldquo;Either you run the day, or the day runs you&rdquo;
                     </p>
                     <div className="signature">{student.name.split(" ")[0]}</div>
                   </div>
@@ -244,7 +262,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
 
               {/* RIGHT COLUMN */}
               <div className="yearbook-col yearbook-col-right">
-                
+
                 {/* COURSES */}
                 <div className="yearbook-section">
                   <h3>COURSES</h3>
@@ -284,7 +302,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
                     <h3>PRIZES WON</h3>
                     {hasPrizes ? (
                       student.prizes!.map((prize, i) => (
-                        <div key={i} className="yearbook-item text-sm">
+                        <div key={i} className="yearbook-item" style={{ fontSize: "0.8rem" }}>
                           {prize.position && <span className="mr-1">🥇</span>}
                           {prize.eventName}
                         </div>
@@ -312,7 +330,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           {prevStudent ? (
             <Link
               href={`/profile/${encodeURIComponent(prevStudent.id)}`}
-              className="flex items-center gap-1 text-sm font-bold text-[#111] hover:text-[#555] bg-white border-2 border-[#111] px-6 py-3 rounded shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+              className="flex items-center gap-1 text-sm font-bold text-white px-6 py-3 rounded shadow-md"
+              style={{ background: "#2d6060", border: "2px solid #e8a830" }}
             >
               <ChevronLeft size={18} /> Previous
             </Link>
@@ -320,7 +339,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
           {nextStudent ? (
             <Link
               href={`/profile/${encodeURIComponent(nextStudent.id)}`}
-              className="flex items-center gap-1 text-sm font-bold text-[#111] hover:text-[#555] bg-white border-2 border-[#111] px-6 py-3 rounded shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+              className="flex items-center gap-1 text-sm font-bold text-white px-6 py-3 rounded shadow-md"
+              style={{ background: "#2d6060", border: "2px solid #e8a830" }}
             >
               Next <ChevronRight size={18} />
             </Link>
@@ -328,6 +348,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
         </div>
 
       </div>
+
+      {/* Slide-in keyframe for folder + internship cards */}
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(24px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
     </div>
   );
 }
