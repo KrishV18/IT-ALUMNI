@@ -1,12 +1,9 @@
 import Link from "next/link";
 
 export default function Footer() {
-  const TECH_BADGES = ["Next.js 16", "Tailwind CSS v4", "Google Sheets API"];
   const QUICK_LINKS = [
     { href: "/", label: "Home" },
     { href: "/directory", label: "Student Directory" },
-    { href: "/directory?spec=AIML", label: "AIML Students" },
-    { href: "/directory?spec=FSD", label: "FSD Students" },
   ];
 
   return (
@@ -15,14 +12,20 @@ export default function Footer() {
         .footer-link {
           font-family: var(--font-sans);
           font-size: 0.875rem;
-          color: rgba(255,255,255,0.60);
+          color: rgba(255,255,255,0.70);
           text-decoration: none;
           transition: color 0.15s;
         }
         .footer-link:hover { color: #e8a830; }
+        
+        .contributor-name {
+          color: #e8a830;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+        }
       `}</style>
 
-      <div className="max-w-5xl mx-auto px-6 py-14 text-center">
+      <div className="max-w-4xl mx-auto px-6 py-12 text-center">
 
         {/* Logo */}
         <Link href="/" className="inline-flex items-center gap-1 mb-3 decoration-transparent">
@@ -35,31 +38,8 @@ export default function Footer() {
           The digital yearbook for IT Department students and alumni.
         </p>
 
-        {/* Tech colophon stamps */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
-          {TECH_BADGES.map((badge) => (
-            <span
-              key={badge}
-              className="px-3 py-1.5"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-                fontSize: "0.6rem",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                background: "#fff9e0",
-                color: "#2d6060",
-                border: "1.5px solid rgba(232,168,48,0.60)",
-                borderRadius: "3px",
-              }}
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
-
         {/* Quick links */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mb-10">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-10">
           {QUICK_LINKS.map(({ href, label }) => (
             <Link key={href} href={href} className="footer-link">
               {label}
@@ -68,14 +48,28 @@ export default function Footer() {
         </div>
 
         {/* Gold micro rule */}
-        <div className="mb-8 mx-auto w-32" style={{ height: "1px", background: "rgba(232,168,48,0.40)" }} />
+        <div className="mb-8 mx-auto w-16" style={{ height: "2px", background: "rgba(232,168,48,0.50)", borderRadius: "2px" }} />
 
-        {/* Caveat tagline — only handwritten text in footer */}
-        <p className="mb-4" style={{ fontFamily: "var(--font-script)", fontSize: "1.4rem", color: "rgba(255,255,255,0.80)" }}>
+        {/* Contribution Highlight */}
+        <div className="mb-6 flex flex-col items-center justify-center gap-2">
+          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.95rem", color: "rgba(255,255,255,0.8)" }}>
+            Contributed by{" "}
+            <a href="https://www.linkedin.com/in/krish-vishwakarma-46481527a/" target="_blank" rel="noopener noreferrer" className="contributor-name">
+              Krish Vishwakarma
+            </a>{" "}
+            &amp;{" "}
+            <a href="https://www.linkedin.com/in/shubham-raj-62755628b/" target="_blank" rel="noopener noreferrer" className="contributor-name">
+              Shubham Raj
+            </a>
+          </p>
+        </div>
+
+        {/* Caveat tagline */}
+        <p className="mb-4 mt-2" style={{ fontFamily: "var(--font-script)", fontSize: "1.3rem", color: "rgba(255,255,255,0.60)" }}>
           Built with ♥ for the IT community
         </p>
 
-        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.7rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.04em" }}>
+        <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", letterSpacing: "0.04em" }}>
           © {new Date().getFullYear()} IT Department. All rights reserved.
         </p>
       </div>

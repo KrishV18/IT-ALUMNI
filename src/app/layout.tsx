@@ -28,8 +28,8 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "IT Connect — Student Alumni Network",
   description:
-    "Discover and connect with IT department students and alumni. Browse profiles by specialization, explore skills, and network on LinkedIn and GitHub.",
-  keywords: ["IT Connect", "student directory", "alumni network", "AIML", "FSD"],
+    "Discover and connect with IT department students and alumni. Browse profiles by group, explore internships, projects, and achievements.",
+  keywords: ["IT Connect", "student directory", "alumni network", "yearbook", "MAIT"],
 };
 
 export default function RootLayout({

@@ -14,7 +14,7 @@ interface SearchBarProps {
 export default function SearchBar({
   value,
   onChange,
-  placeholder = "Search by name, skill, or specialization…",
+  placeholder = "Search by name, enrollment, or group…",
   large = false,
 }: SearchBarProps) {
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,103 +1,162 @@
-export interface StudentResult {
-  sem1?: number;
-  sem2?: number;
-  sem3?: number;
-  sem4?: number;
-  sem5?: number;
-  sem6?: number;
-  sem7?: number;
-  sem8?: number;
+// ─── Event types (Hackathon, Technical, Non-Technical, Sport, Cultural) ────
+export interface StudentEvent {
+  type: "Hackathon" | "Technical" | "Non-Technical" | "Sport" | "Cultural" | "Workshop" | "Society" | "Additional";
+  name: string;
+  date: string;
+  endDate?: string;
+  place: string;
+  conductor: string;
+  position: string;
+  category: string;
+  certificate: string;
+  role?: string; // for society events
+  societyName?: string; // for society events
 }
 
-export interface Internship {
-  title: string;
-  company: string;
-  location: string;
-  mode: string;
-  tech: string;
-  duration: string;
+// ─── MOOC Course ────────────────────────────────────────────────────────────
+export interface MoocCourse {
+  name: string;
   startDate: string;
   endDate: string;
-  paid: string;
-  stipend: string;
-  companyWebsite: string;
-  sector: string;
+  educator: string;
+  duration: string;
+  grade: string;
+  completed: string;
+  certificate: string;
 }
 
-export interface Activity {
-  eventName: string;
-  role: string; // Participated / Organised
-  place: string;
-  date: string;
+// ─── NPTEL Course ───────────────────────────────────────────────────────────
+export interface NptelCourse {
+  name: string;
+  duration: string;
+  startMonth: string;
+  endMonth: string;
+  score: string;
+  candidatesCertified: string;
+  educator: string;
+  iit: string;
+  certificate: string;
 }
 
-export interface Prize {
-  eventName: string;
-  date: string;
-  location: string;
-  level: string; // College / National / International
-  position: string;
-}
-
+// ─── Certification ──────────────────────────────────────────────────────────
 export interface Certification {
   name: string;
-  issuedBy: string;
-  date: string;
-  credentialId: string;
-  url: string;
-}
-
-export interface FinalResult {
-  subject: string;
+  startDate: string;
+  endDate: string;
+  duration: string;
   grade: string;
-  marks?: number;
+  educator: string;
+  certificate: string;
 }
 
+// ─── Internship ─────────────────────────────────────────────────────────────
+export interface Internship {
+  organization: string;
+  title: string;
+  technology: string;
+  startDate: string;
+  endDate: string;
+  duration: string;
+  trainer: string;
+  certificate: string;
+}
+
+// ─── Volunteering ───────────────────────────────────────────────────────────
+export interface Volunteering {
+  organization: string;
+  eventName: string;
+  startDate: string;
+  endDate: string;
+  place: string;
+  role: string;
+  certificate: string;
+}
+
+// ─── Startup ────────────────────────────────────────────────────────────────
+export interface Startup {
+  name: string;
+  detail: string;
+  founders: string;
+  role: string;
+  startDate: string;
+  location: string;
+  email: string;
+}
+
+// ─── Project ────────────────────────────────────────────────────────────────
+export interface Project {
+  title: string;
+  type: string;
+  teamMembers: string;
+  domain: string;
+  sdgLevel: string;
+  certificate: string;
+}
+
+// ─── Research Paper ─────────────────────────────────────────────────────────
+export interface ResearchPaper {
+  title: string;
+  authors: string;
+  conference: string;
+  conductor: string;
+  place: string;
+  date: string;
+  indexing: string;
+  doi: string;
+  issn: string;
+}
+
+// ─── Higher Education ───────────────────────────────────────────────────────
+export interface HigherEducation {
+  program: string;
+  college: string;
+  location: string;
+  score: string;
+}
+
+// ─── Competitive Coding ─────────────────────────────────────────────────────
+export interface CompetitiveCoding {
+  platform: string;
+  enrolled: boolean;
+  profileLink: string;
+}
+
+// ─── NGO ────────────────────────────────────────────────────────────────────
+export interface NGOWork {
+  name: string;
+  about: string;
+  role: string;
+  eventDone: string;
+  eventName: string;
+  eventDate: string;
+  eventPlace: string;
+  certificate: string;
+}
+
+// ─── Main Student ───────────────────────────────────────────────────────────
 export interface Student {
   id: string;
-  sNo: string;
-  enrollmentNo: string;
-  group: string;
   name: string;
-  specialization: string;
+  enrollmentNo: string;
   contact: string;
   email: string;
-  societies: string;
-  linkedin: string;
-  github: string;
-  expertise: string[];
-  gid: number;
-  image?: string;
-  // Enriched from other sheets
-  results?: StudentResult;
-  finalResults?: FinalResult[];
-  internships?: Internship[];
-  activities?: Activity[];
-  prizes?: Prize[];
-  certifications?: Certification[];
-}
+  group: string;
+  mentor: string;
+  activitiesSelector: string;
+  photograph: string;
+  quote: string;
 
-// Raw Google Sheets gviz/tq JSON types
-export interface RawCell {
-  v: string | number | null;
-  f?: string;
-}
-export interface RawRow {
-  c: (RawCell | null)[];
-}
-export interface RawCol {
-  id: string;
-  label: string;
-  type: string;
-}
-export interface RawTable {
-  cols: RawCol[];
-  rows: RawRow[];
-  parsedNumHeaders?: number;
-}
-export interface RawSheetData {
-  version: string;
-  reqId: string;
-  status: string;
-  table: RawTable;
+  // Enriched arrays
+  events: StudentEvent[];
+  moocCourses: MoocCourse[];
+  nptelCourses: NptelCourse[];
+  certifications: Certification[];
+  internships: Internship[];
+  volunteering: Volunteering[];
+  startups: Startup[];
+  projects: Project[];
+  researchPapers: ResearchPaper[];
+  higherEducation: HigherEducation[];
+  competitiveCoding: CompetitiveCoding[];
+  ngoWork: NGOWork[];
 }

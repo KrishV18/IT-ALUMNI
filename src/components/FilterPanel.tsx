@@ -7,35 +7,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface FilterPanelProps {
   students: Student[];
-  filters: { specialization: string; group: string; expertise: string };
+  filters: { group: string; mentor: string };
   onFilterChange: (key: string, value: string) => void;
   onClear: () => void;
 }
 
 function unique(arr: string[]): string[] {
   return Array.from(new Set(arr.filter(Boolean))).sort();
-}
-
-function getSpecPillStyle(spec: string, active: boolean) {
-  const s = spec.toUpperCase();
-  if (s.includes("AIML") || s.includes("AI")) return {
-    bg: active ? "#2d6060" : "transparent",
-    color: active ? "#fff" : "#2d6060",
-    border: "#2d6060",
-    bottomBar: "#2d6060",
-  };
-  if (s.includes("FSD") || s.includes("FULL")) return {
-    bg: active ? "#c98a20" : "transparent",
-    color: active ? "#fff" : "#c98a20",
-    border: "#e8a830",
-    bottomBar: "#e8a830",
-  };
-  return {
-    bg: active ? "#b56060" : "transparent",
-    color: active ? "#fff" : "#b56060",
-    border: "#e8a0a0",
-    bottomBar: "#e8a0a0",
-  };
 }
 
 interface StyledSelectProps {
@@ -88,15 +66,10 @@ function StyledSelect({ label, value, onChange, options, allLabel }: StyledSelec
 }
 
 export default function FilterPanel({ students, filters, onFilterChange, onClear }: FilterPanelProps) {
-  const specializations = useMemo(() => unique(students.map((s) => s.specialization.trim())), [students]);
   const groups = useMemo(() => unique(students.map((s) => s.group.trim())), [students]);
-  const allSkills = useMemo(() => {
-    const set = new Set<string>();
-    students.forEach((s) => s.expertise.forEach((e) => e && set.add(e.trim())));
-    return Array.from(set).sort();
-  }, [students]);
+  const mentors = useMemo(() => unique(students.map((s) => s.mentor.trim())), [students]);
 
-  const activeCount = [filters.specialization, filters.group, filters.expertise].filter(Boolean).length;
+  const activeCount = [filters.group, filters.mentor].filter(Boolean).length;
 
   return (
     <div className="p-6" style={{ background: "#faf8f3", border: "2px solid rgba(232,168,48,0.25)", borderRadius: "6px", boxShadow: "0 4px 16px rgba(45,96,96,0.06)" }}>
@@ -122,40 +95,39 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
 
       <div className="perf-divider mb-5" />
 
-      {/* Specialization — tab pills */}
+      {/* Group — tab pills */}
       <div className="mb-5">
-        <p className="label-caps mb-2" style={{ color: filters.specialization ? "#2d6060" : "#6b5e4e" }}>Specialization</p>
+        <p className="label-caps mb-2" style={{ color: filters.group ? "#2d6060" : "#6b5e4e" }}>Group</p>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => onFilterChange("specialization", "")}
+            onClick={() => onFilterChange("group", "")}
             className="px-3 py-1.5 rounded-sm text-xs font-semibold transition-all duration-200 relative"
             style={{
               fontFamily: "var(--font-sans)",
-              background: !filters.specialization ? "rgba(45,96,96,0.10)" : "transparent",
-              color: !filters.specialization ? "#2d6060" : "#6b5e4e",
+              background: !filters.group ? "rgba(45,96,96,0.10)" : "transparent",
+              color: !filters.group ? "#2d6060" : "#6b5e4e",
               border: "1.5px solid rgba(45,96,96,0.20)",
-              borderBottom: !filters.specialization ? "3px solid #2d6060" : "3px solid transparent",
+              borderBottom: !filters.group ? "3px solid #2d6060" : "3px solid transparent",
             }}
           >
             All
           </button>
-          {specializations.map((spec) => {
-            const active = filters.specialization === spec;
-            const ps = getSpecPillStyle(spec, active);
+          {groups.map((grp) => {
+            const active = filters.group === grp;
             return (
               <button
-                key={spec}
-                onClick={() => onFilterChange("specialization", active ? "" : spec)}
+                key={grp}
+                onClick={() => onFilterChange("group", active ? "" : grp)}
                 className="px-3 py-1.5 rounded-sm text-xs font-semibold transition-all duration-300 relative"
                 style={{
                   fontFamily: "var(--font-sans)",
-                  background: ps.bg,
-                  color: ps.color,
-                  border: `1.5px solid ${ps.border}`,
-                  borderBottom: active ? `3px solid ${ps.bottomBar}` : `3px solid ${ps.border}`,
+                  background: active ? "#2d6060" : "transparent",
+                  color: active ? "#fff" : "#2d6060",
+                  border: "1.5px solid #2d6060",
+                  borderBottom: active ? "3px solid #2d6060" : "3px solid transparent",
                 }}
               >
-                {spec}
+                {grp}
               </button>
             );
           })}
@@ -163,8 +135,7 @@ export default function FilterPanel({ students, filters, onFilterChange, onClear
       </div>
 
       <div className="space-y-5">
-        <StyledSelect label="Group" value={filters.group} onChange={(v) => onFilterChange("group", v)} options={groups} allLabel="All Groups" />
-        <StyledSelect label="Expertise" value={filters.expertise} onChange={(v) => onFilterChange("expertise", v)} options={allSkills} allLabel="All Skills" />
+        <StyledSelect label="Mentor" value={filters.mentor} onChange={(v) => onFilterChange("mentor", v)} options={mentors} allLabel="All Mentors" />
       </div>
     </div>
   );

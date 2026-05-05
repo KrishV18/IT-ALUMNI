@@ -16,9 +16,8 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
   const searchParams = useSearchParams();
   const [search, setSearch]   = useState(searchParams.get("q") || "");
   const [filters, setFilters] = useState({
-    specialization: searchParams.get("spec") || "",
-    group: "",
-    expertise: "",
+    group: searchParams.get("group") || "",
+    mentor: "",
   });
   const [mounted, setMounted] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -30,20 +29,24 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
   }, [mobileFiltersOpen]);
 
   const handleFilterChange = (key: string, value: string) => setFilters((p) => ({ ...p, [key]: value }));
-  const handleClear = () => { setFilters({ specialization: "", group: "", expertise: "" }); setSearch(""); };
+  const handleClear = () => { setFilters({ group: "", mentor: "" }); setSearch(""); };
 
   const filtered = useMemo(() => {
     return students.filter((s) => {
       const q = search.toLowerCase();
-      const matchSearch = !q || s.name.toLowerCase().includes(q) || (s.email && s.email.toLowerCase().includes(q)) || s.specialization.toLowerCase().includes(q) || s.expertise.some((e) => e.toLowerCase().includes(q)) || (s.societies && s.societies.toLowerCase().includes(q));
-      const matchSpec  = !filters.specialization || s.specialization.trim().toLowerCase() === filters.specialization.toLowerCase();
-      const matchGroup = !filters.group || s.group.trim().toLowerCase() === filters.group.toLowerCase();
-      const matchExp   = !filters.expertise || s.expertise.some((e) => e.trim().toLowerCase() === filters.expertise.toLowerCase());
-      return matchSearch && matchSpec && matchGroup && matchExp;
+      const matchSearch = !q
+        || s.name.toLowerCase().includes(q)
+        || (s.email && s.email.toLowerCase().includes(q))
+        || s.enrollmentNo.toLowerCase().includes(q)
+        || s.group.toLowerCase().includes(q)
+        || s.mentor.toLowerCase().includes(q);
+      const matchGroup  = !filters.group || s.group.trim().toLowerCase() === filters.group.toLowerCase();
+      const matchMentor = !filters.mentor || s.mentor.trim().toLowerCase() === filters.mentor.toLowerCase();
+      return matchSearch && matchGroup && matchMentor;
     });
   }, [students, search, filters]);
 
-  const activeFilterCount = [filters.specialization, filters.group, filters.expertise].filter(Boolean).length;
+  const activeFilterCount = [filters.group, filters.mentor].filter(Boolean).length;
   const hasAnyFilter = search || activeFilterCount > 0;
 
   return (
@@ -110,7 +113,6 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
             </div>
           ) : filtered.length === 0 ? (
             <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }} className="flex flex-col items-center justify-center py-20 px-6 text-center rounded-md" style={{ background: "#faf8f3", border: "2px dashed rgba(232,168,48,0.40)" }}>
-              {/* Hand-drawn style empty card sticky note */}
               <div className="mb-4 px-8 py-5 rotate-[-1deg]" style={{ background: "#fff9e0", border: "2px solid #e8a830", borderRadius: "3px", boxShadow: "2px 3px 0 rgba(0,0,0,0.08)" }}>
                 <p style={{ fontFamily: "var(--font-script)", fontSize: "1.4rem", color: "#1a1a1a" }}>
                   No students found here!
@@ -124,14 +126,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
               {filtered.map((student, i) => (
-                <div
-                  key={student.id}
-                  style={{
-                    opacity: 1,
-                    transform: "scale(1)",
-                    transition: "opacity 0.3s ease, transform 0.3s ease",
-                  }}
-                >
+                <div key={student.id} style={{ opacity: 1, transform: "scale(1)", transition: "opacity 0.3s ease, transform 0.3s ease" }}>
                   <AlumniCard student={student} index={i} />
                 </div>
               ))}

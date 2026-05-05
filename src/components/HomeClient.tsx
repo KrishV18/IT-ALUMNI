@@ -24,10 +24,11 @@ function AnimatedCounter({ value, delay = 0 }: { value: number; delay?: number }
   return <motion.span ref={ref}>{display}</motion.span>;
 }
 
-function getSpecStyle(spec: string) {
-  const s = spec.toUpperCase();
-  if (s.includes("AIML") || s.includes("AI")) return { tabBg: "#2d6060", border: "#2d6060", label: "#fff" };
-  if (s.includes("FSD") || s.includes("FULL")) return { tabBg: "#c98a20", border: "#e8a830", label: "#fff" };
+function getGroupStyle(group: string) {
+  const g = group.toUpperCase();
+  if (g.includes("7")) return { tabBg: "#2d6060", border: "#2d6060", label: "#fff" };
+  if (g.includes("8")) return { tabBg: "#c98a20", border: "#e8a830", label: "#fff" };
+  if (g.includes("5") || g.includes("6")) return { tabBg: "#7c5bbf", border: "#9a7ed6", label: "#fff" };
   return { tabBg: "#b56060", border: "#e8a0a0", label: "#fff" };
 }
 
@@ -35,14 +36,21 @@ export default function HomeClient({ students }: { students: Student[] }) {
   const [search, setSearch] = useState("");
   const router = useRouter();
 
-  const featured = useMemo(() => students.filter((s) => s.linkedin || s.expertise.length > 0).slice(0, 6), [students]);
+  const featured = useMemo(() => {
+    // Feature students with the most activities
+    return [...students].sort((a, b) => {
+      const aCount = a.events.length + a.internships.length + a.projects.length + a.moocCourses.length + a.nptelCourses.length + a.certifications.length;
+      const bCount = b.events.length + b.internships.length + b.projects.length + b.moocCourses.length + b.nptelCourses.length + b.certifications.length;
+      return bCount - aCount;
+    }).slice(0, 6);
+  }, [students]);
   const totalStudents = students.length;
-  const uniqueSpecs = new Set(students.map((s) => s.specialization.trim())).size;
-  const withLinkedIn = students.filter((s) => s.linkedin).length;
-  const specCounts = useMemo(() => {
+  const uniqueGroups = new Set(students.map((s) => s.group.trim())).size;
+  const withInternships = students.filter((s) => s.internships.length > 0).length;
+  const groupCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    students.forEach((s) => { const sp = s.specialization.trim(); if (sp) map[sp] = (map[sp] || 0) + 1; });
-    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    students.forEach((s) => { const g = s.group.trim(); if (g) map[g] = (map[g] || 0) + 1; });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 6);
   }, [students]);
 
   const handleSearchKeyDown = (e: React.KeyboardEvent) => {
@@ -58,8 +66,8 @@ export default function HomeClient({ students }: { students: Student[] }) {
 
   const STATS = [
     { value: totalStudents, label: "Total Students",  icon: Users,          rotate: "-1deg",   delay: 0 },
-    { value: uniqueSpecs,   label: "Specializations", icon: GraduationCap,  rotate: "0.5deg",  delay: 150 },
-    { value: withLinkedIn,  label: "On LinkedIn",     icon: Briefcase,      rotate: "1deg",    delay: 300 },
+    { value: uniqueGroups,  label: "Groups",          icon: GraduationCap,  rotate: "0.5deg",  delay: 150 },
+    { value: withInternships, label: "With Internships", icon: Briefcase,   rotate: "1deg",    delay: 300 },
   ];
 
   return (
@@ -131,21 +139,21 @@ export default function HomeClient({ students }: { students: Student[] }) {
         </div>
       </section>
 
-      {/* ── SPECIALIZATIONS — binder tabs ── */}
+      {/* ── GROUPS — binder tabs ── */}
       <section className="px-6 py-20 relative halftone-edge" style={{ background: "#f3f0e8" }}>
         <div className="max-w-6xl mx-auto relative z-10" ref={specsRef}>
           <div className="text-center mb-12">
-            <p className="label-caps mb-3">Browse Specializations</p>
+            <p className="label-caps mb-3">Browse by Group</p>
             <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "clamp(1.8rem,4vw,2.5rem)", letterSpacing: "-0.02em", color: "#1a1a1a" }}>Find Your Tribe</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {specCounts.map(([spec, count], idx) => {
-              const s = getSpecStyle(spec);
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {groupCounts.map(([group, count], idx) => {
+              const s = getGroupStyle(group);
               return (
-                <Link key={spec} href={`/directory?spec=${encodeURIComponent(spec)}`} className="block group">
+                <Link key={group} href={`/directory?group=${encodeURIComponent(group)}`} className="block group">
                   <motion.div initial={{ opacity: 0, y: 16 }} animate={specsInView ? { opacity: 1, y: 0 } : {}} whileHover={{ y: -2 }} transition={{ delay: idx * 0.08, duration: 0.35, ease: [0.16,1,0.3,1] }} className="overflow-hidden rounded-sm cursor-pointer" style={{ border: `2px solid ${s.border}`, boxShadow: "0 4px 8px rgba(0,0,0,0.06)" }}>
                     <div className="px-4 pt-3 pb-2.5" style={{ background: s.tabBg }}>
-                      <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.06em", color: s.label, textTransform: "uppercase" }}>{spec}</p>
+                      <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.8rem", letterSpacing: "0.06em", color: s.label, textTransform: "uppercase" }}>Group {group}</p>
                     </div>
                     <div className="px-4 py-3" style={{ background: "#faf8f3" }}>
                       <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "1.5rem", color: "#1a1a1a", lineHeight: 1 }}>{count}</p>
