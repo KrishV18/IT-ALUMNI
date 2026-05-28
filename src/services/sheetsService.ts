@@ -10,9 +10,9 @@ import {
 // ║  Fetches from "Form responses 1" tab — one row per student.             ║
 // ╚════════════════════════════════════════════════════════════════════════════╝
 
-const SHEET_ID = "1-1A5iMLsigYm9qRNg1M9WmUUjCV6yN5s4kfDv4Jntvk";
+const SHEET_ID = "1Nr-S8nMbM7Q60Z_U14a4YeJ0u_YdEzdbaMCYfdJ2lvw";
 const API_KEY = "AIzaSyCWNiyi5-LF342xKh2nr0eT1TSTSgxooU8";
-const SHEET_TAB = "Form responses 1";
+const SHEET_TAB = "Sheet1";
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 

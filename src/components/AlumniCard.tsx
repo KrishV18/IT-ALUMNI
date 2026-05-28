@@ -103,11 +103,11 @@ export default function AlumniCard({ student, index }: { student: Student; index
             {/* Group / Email */}
             <div className="flex items-center gap-2 mb-3 text-xs" style={{ color: "#6b5e4e", fontFamily: "var(--font-sans)" }}>
               <BookOpen size={12} className="opacity-60 shrink-0" />
-              <span>{student.enrollmentNo}</span>
+              <span className="shrink-0">{student.enrollmentNo}</span>
               {student.email && (
                 <>
-                  <span className="opacity-30">•</span>
-                  <span className="truncate max-w-[140px]" title={student.email}>{student.email}</span>
+                  <span className="opacity-30 shrink-0">•</span>
+                  <span className="truncate max-w-[100px] sm:max-w-[140px]" title={student.email}>{student.email}</span>
                 </>
               )}
             </div>

@@ -8,6 +8,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Users, GraduationCap, Briefcase, ArrowRight } from "lucide-react";
+import DownloadPDFButton from "@/components/DownloadPDFButton";
 
 function AnimatedCounter({ value, delay = 0 }: { value: number; delay?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -88,7 +89,7 @@ export default function HomeClient({ students }: { students: Student[] }) {
             </motion.div>
 
             {/* Gold inset frame */}
-            <motion.div variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16,1,0.3,1] as [number,number,number,number] } } }} className="w-full max-w-3xl mx-auto px-8 py-10 md:py-14" style={{ border: "8px solid #e8a830", borderRadius: "4px", background: "#faf8f3" }}>
+            <motion.div variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16,1,0.3,1] as [number,number,number,number] } } }} className="w-full max-w-3xl mx-auto px-4 sm:px-8 py-10 md:py-14" style={{ border: "8px solid #e8a830", borderRadius: "4px", background: "#faf8f3" }}>
 
               <h1 className="mb-5" style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: "clamp(2.8rem,7vw,5rem)", letterSpacing: "-0.02em", color: "#1a1a1a", lineHeight: 1.05 }}>
                 <span style={{ color: "#2d6060" }}>IT</span> Connect
@@ -107,9 +108,7 @@ export default function HomeClient({ students }: { students: Student[] }) {
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                  <Link href={search ? `/directory?q=${encodeURIComponent(search)}` : "/directory"} className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-200" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, background: "#2d6060", border: "2px solid #2d6060" }} onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#e8a830"; }} onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = "#2d6060"; }}>
-                    Explore Students
-                  </Link>
+                  <DownloadPDFButton students={students} variant="hero" />
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
                   <a href="#featured" className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold transition-all duration-200" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, background: "transparent", border: "2px solid #2d6060", color: "#2d6060" }} onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(45,96,96,0.06)"; }} onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; }}>
@@ -126,7 +125,7 @@ export default function HomeClient({ students }: { students: Student[] }) {
       <section className="px-6 pb-16" ref={statsRef}>
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8">
           {STATS.map((stat, i) => (
-            <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={statsInView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.1, duration: 0.4, ease: [0.16,1,0.3,1] }} className="flex flex-col items-center px-8 py-5" style={{ background: "#2d6060", color: "#fff", borderRadius: "3px", transform: `rotate(${stat.rotate})`, fontFamily: "var(--font-display)", minWidth: "130px", boxShadow: "2px 3px 0 rgba(0,0,0,0.12)" }}>
+            <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={statsInView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.1, duration: 0.4, ease: [0.16,1,0.3,1] }} className="flex flex-col items-center px-4 sm:px-8 py-4 sm:py-5 min-w-[110px] sm:min-w-[130px]" style={{ background: "#2d6060", color: "#fff", borderRadius: "3px", transform: `rotate(${stat.rotate})`, fontFamily: "var(--font-display)", boxShadow: "2px 3px 0 rgba(0,0,0,0.12)" }}>
               <stat.icon size={20} style={{ opacity: 0.7, marginBottom: "6px" }} />
               <div style={{ fontWeight: 800, fontSize: "2rem", letterSpacing: "-0.02em", lineHeight: 1 }}>
                 <AnimatedCounter value={stat.value} delay={stat.delay} />

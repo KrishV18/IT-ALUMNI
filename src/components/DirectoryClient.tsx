@@ -10,6 +10,7 @@ import FilterPanel from "@/components/FilterPanel";
 import SearchBar from "@/components/SearchBar";
 import SkeletonCard from "@/components/SkeletonCard";
 
+
 interface DirectoryClientProps { students: Student[]; }
 
 export default function DirectoryClient({ students }: DirectoryClientProps) {
@@ -71,6 +72,7 @@ export default function DirectoryClient({ students }: DirectoryClientProps) {
             <div className="max-w-2xl">
               <SearchBar value={search} onChange={setSearch} />
             </div>
+
           </motion.div>
         </div>
       </div>

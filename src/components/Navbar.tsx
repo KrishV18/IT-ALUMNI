@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Home, Users, Menu, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import DownloadPDFButton from "@/components/DownloadPDFButton";
 
 const NAV_LINKS = [
   { href: "/", label: "Home", icon: Home },
@@ -134,24 +135,7 @@ export default function Navbar() {
           {/* CTA + Hamburger */}
           <div className="flex items-center gap-3">
             {/* Desktop CTA */}
-            <Link
-              href="/directory"
-              className="hidden md:inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white rounded-full transition-all duration-200 hover:scale-[1.02]"
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontWeight: 600,
-                background: "#2d6060",
-                border: "1.5px solid #2d6060",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.border = "1.5px solid #e8a830";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLAnchorElement).style.border = "1.5px solid #2d6060";
-              }}
-            >
-              Explore Students
-            </Link>
+            <DownloadPDFButton variant="navbar" />
 
             {/* Hamburger — mobile only */}
             <motion.button
@@ -238,17 +222,7 @@ export default function Navbar() {
 
                 <div className="my-2" style={{ borderTop: "1px dashed rgba(45,96,96,0.2)" }} />
 
-                <Link
-                  href="/directory"
-                  className="flex items-center justify-center gap-2 w-full py-3 rounded-full text-sm font-semibold text-white shadow-md"
-                  style={{
-                    background: "#2d6060",
-                    fontFamily: "var(--font-sans)",
-                    fontWeight: 600,
-                  }}
-                >
-                  Explore Students
-                </Link>
+                <DownloadPDFButton variant="mobile-nav" />
               </div>
             </motion.div>
           </>
