@@ -106,16 +106,23 @@ export default function HomeClient({ students }: { students: Student[] }) {
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+              <div className="flex flex-col sm:flex-row justify-center items-stretch sm:items-center gap-3">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
                   <DownloadPDFButton students={students} variant="hero" />
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
-                  <a href="#featured" className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-semibold transition-all duration-200" style={{ fontFamily: "var(--font-sans)", fontWeight: 600, background: "transparent", border: "2px solid #2d6060", color: "#2d6060" }} onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(45,96,96,0.06)"; }} onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; }}>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+                  <a
+                    href="#featured"
+                    className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 rounded-full text-sm font-semibold transition-all duration-200"
+                    style={{ fontFamily: "var(--font-sans)", fontWeight: 600, background: "transparent", border: "2px solid #2d6060", color: "#2d6060" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(45,96,96,0.06)"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = "transparent"; }}
+                  >
                     View Profiles
                   </a>
                 </motion.div>
               </div>
+
             </motion.div>
           </motion.div>
         </div>
