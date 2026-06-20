@@ -143,7 +143,8 @@ export interface Student {
   group: string;
   mentor: string;
   activitiesSelector: string;
-  photograph: string;
+  photograph: string;        // Google Drive thumbnail URL (remote)
+  localPhotoPath: string;   // Local /photos/{enrollmentNo}.ext path (served from public/)
   quote: string;
 
   // Enriched arrays

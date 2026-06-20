@@ -34,6 +34,14 @@ function driveThumb(raw: string): string {
   return raw;
 }
 
+/** Build the local photo URL via the dynamic API route that handles
+ *  zero-padding mismatches and all image extensions (jpg/jpeg/png). */
+function localPhotoUrl(enrollmentNo: string): string {
+  if (!enrollmentNo) return "";
+  return `/api/photo/${enrollmentNo}`;
+}
+
+
 // ─── Column index map (0-based) ────────────────────────────────────────────
 // Student basics
 const COL = {
@@ -377,6 +385,7 @@ function parseRow(row: string[], idx: number): Student | null {
     mentor: g(row, COL.MENTOR),
     activitiesSelector: g(row, COL.ACTIVITIES_SEL),
     photograph: driveThumb(g(row, COL.PHOTO)),
+    localPhotoPath: localPhotoUrl(g(row, COL.ENROLLMENT)),
     quote: g(row, COL.QUOTE),
     events,
     moocCourses,

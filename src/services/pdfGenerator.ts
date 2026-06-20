@@ -26,12 +26,96 @@ function trunc(d: jsPDF, t: string, maxW: number): string {
   if (!t) return "";
   if (d.getTextWidth(t) <= maxW) return t;
   let s = t;
-  while (s.length > 1 && d.getTextWidth(s + "…") > maxW) s = s.slice(0,-1);
-  return s + "…";
+  while (s.length > 1 && d.getTextWidth(s + "\u2026") > maxW) s = s.slice(0,-1);
+  return s + "\u2026";
 }
 
 function wrap(d: jsPDF, t: string, w: number): string[] {
   return t ? d.splitTextToSize(t, w) as string[] : [];
+}
+
+// ─── Photo Loading Utility ──────────────────────────────────────────────────────
+
+/**
+ * Fetch a student photo via the /api/photo/:enrollment route and return
+ * { dataUrl, format } for jsPDF addImage. 
+ * We draw the image onto an HTML5 canvas to standardize the output. This
+ * automatically fixes EXIF rotation, transparent PNGs, and CMYK color spaces
+ * which usually cause jsPDF to render images sideways or completely black.
+ */
+async function fetchPhotoBase64(
+  enrollmentNo: string
+): Promise<{ dataUrl: string; format: "JPEG" | "PNG" } | null> {
+  if (!enrollmentNo) return null;
+  try {
+    const url = `/api/photo/${enrollmentNo}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    if (blob.size < 100) return null;
+
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(blob);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("No 2d context"));
+
+        // Fill white background in case of transparent PNGs
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the image (browser automatically applies EXIF rotation)
+        ctx.drawImage(img, 0, 0);
+
+        // Export as standard RGB JPEG
+        resolve(canvas.toDataURL("image/jpeg", 0.95));
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Image load failed"));
+      };
+
+      img.src = objectUrl;
+    });
+
+    return { dataUrl, format: "JPEG" };
+  } catch {
+    return null;
+  }
+}
+
+/** Pre-load all student photos in parallel, returning a map of enrollmentNo → base64 data */
+async function preloadPhotos(
+  students: Student[],
+  onProgress?: (loaded: number, total: number) => void
+): Promise<Map<string, { dataUrl: string; format: "JPEG" | "PNG" }>> {
+  const map = new Map<string, { dataUrl: string; format: "JPEG" | "PNG" }>();
+  const BATCH = 10; // fetch in batches to avoid overwhelming the browser
+  let loaded = 0;
+  const total = students.length;
+
+  for (let i = 0; i < students.length; i += BATCH) {
+    const batch = students.slice(i, i + BATCH);
+    await Promise.all(
+      batch.map(async (s) => {
+        if (!s.enrollmentNo) return;
+        const result = await fetchPhotoBase64(s.enrollmentNo);
+        if (result) map.set(s.enrollmentNo, result);
+        loaded++;
+        onProgress?.(loaded, total);
+      })
+    );
+    // yield to browser between batches
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  return map;
 }
 
 // ─── Cover Page ───────────────────────────────────────────────────────────
@@ -148,8 +232,12 @@ function countAllItems(secs: SectionData[]): number {
   return secs.reduce((n,s)=>n+s.items.length, 0);
 }
 
-// ─── Adaptive Student Page ────────────────────────────────────────────────
-function drawStudent(doc: jsPDF, s: Student) {
+// ─── Adaptive Student Page ───────────────────────────────────────────────────────────
+function drawStudent(
+  doc: jsPDF,
+  s: Student,
+  photoData: { dataUrl: string; format: "JPEG" | "PNG" } | null
+) {
   sF(doc, C.cream); doc.rect(0,0,PW,PH,"F");
   sD(doc, C.gold); doc.setLineWidth(2); doc.rect(8,8,PW-16,PH-16,"S");
 
@@ -175,9 +263,32 @@ function drawStudent(doc: jsPDF, s: Student) {
   const phX=ix+2, phY=y+3, phW=30, phH=38;
   sF(doc, C.tealDark); sD(doc, C.ink); doc.setLineWidth(0.5);
   rr(doc, phX-2, phY-2, phW+4, phH+4, 1, "FD");
-  sF(doc, C.white); doc.rect(phX, phY, phW, phH-8, "F");
-  sT(doc, [200,200,200]); doc.setFont("helvetica","bold"); doc.setFontSize(18);
-  doc.text(initials(s.name), phX+phW/2, phY+(phH-8)/2+5, {align:"center"});
+
+  // Photo box — embed real photo if available, else show initials
+  if (photoData) {
+    try {
+      // Clip to the photo region with a white background
+      sF(doc, C.white); doc.rect(phX, phY, phW, phH-8, "F");
+      doc.addImage(
+        photoData.dataUrl,
+        photoData.format,
+        phX, phY,
+        phW, phH-8,
+        undefined,
+        "MEDIUM"
+      );
+    } catch {
+      // fallback to initials if addImage fails
+      sF(doc, C.white); doc.rect(phX, phY, phW, phH-8, "F");
+      sT(doc, [200,200,200]); doc.setFont("helvetica","bold"); doc.setFontSize(18);
+      doc.text(initials(s.name), phX+phW/2, phY+(phH-8)/2+5, {align:"center"});
+    }
+  } else {
+    sF(doc, C.white); doc.rect(phX, phY, phW, phH-8, "F");
+    sT(doc, [200,200,200]); doc.setFont("helvetica","bold"); doc.setFontSize(18);
+    doc.text(initials(s.name), phX+phW/2, phY+(phH-8)/2+5, {align:"center"});
+  }
+
   sT(doc, C.white); doc.setFont("helvetica","bold"); doc.setFontSize(7);
   doc.text(trunc(doc, s.name.split(" ")[0]||"", phW), phX+phW/2, phY+phH-2, {align:"center"});
 
@@ -468,7 +579,14 @@ export async function generateDirectoryPDF(students: Student[], onProgress?: Pro
   });
 
   const total = sorted.length;
-  onProgress?.(0, total, "Initializing...");
+  onProgress?.(0, total, "Loading student photos...");
+
+  // Pre-load all photos as base64 before generating PDF
+  const photoMap = await preloadPhotos(sorted, (loaded, photoTotal) => {
+    onProgress?.(0, total, `Loading photos... ${loaded}/${photoTotal}`);
+  });
+
+  onProgress?.(0, total, "Initializing PDF...");
   const doc = new jsPDF({orientation:"portrait", unit:"mm", format:"a4"});
   onProgress?.(0, total, "Creating cover page...");
   drawCover(doc);
@@ -477,9 +595,11 @@ export async function generateDirectoryPDF(students: Student[], onProgress?: Pro
   for (let i=0; i<sorted.length; i++) {
     const st = sorted[i], g = st.group.trim().toUpperCase();
     if (g!==curGroup && g) { curGroup=g; doc.addPage(); drawDivider(doc, st.group.trim()); }
-    doc.addPage(); drawStudent(doc, st);
+    const photoData = photoMap.get(st.enrollmentNo) ?? null;
+    doc.addPage(); drawStudent(doc, st, photoData);
     onProgress?.(i+1, total, `Rendering ${st.name}...`);
     if (i%10===0) await new Promise(r=>setTimeout(r,0));
+
   }
   onProgress?.(total, total, "Finalizing PDF...");
   return doc.output("blob");

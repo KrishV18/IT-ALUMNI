@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 interface ProfilePhotoProps {
-  src: string;
+  src: string;          // local photo path via /api/photo/:enrollment (primary)
+  fallbackSrc?: string; // Drive thumbnail URL (secondary)
   alt: string;
   initials: string;
 }
@@ -32,21 +33,25 @@ function InitialsAvatar({ initials }: { initials: string }) {
   );
 }
 
-export default function ProfilePhoto({ src, alt, initials }: ProfilePhotoProps) {
-  const [failed, setFailed] = useState(false);
+/**
+ * Shows photo from local API first, falls back to Drive URL, then initials.
+ */
+export default function ProfilePhoto({ src, fallbackSrc, alt, initials }: ProfilePhotoProps) {
+  const [srcIdx, setSrcIdx] = useState(0);
+  const sources = [src, fallbackSrc].filter(Boolean) as string[];
 
-  if (!src || failed) {
+  if (!sources.length || srcIdx >= sources.length) {
     return <InitialsAvatar initials={initials} />;
   }
 
   return (
     <img
-      src={src}
+      src={sources[srcIdx]}
       alt={alt}
       className="w-full h-full object-cover"
       referrerPolicy="no-referrer"
       crossOrigin="anonymous"
-      onError={() => setFailed(true)}
+      onError={() => setSrcIdx((i) => i + 1)}
     />
   );
 }

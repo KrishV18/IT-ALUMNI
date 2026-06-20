@@ -157,10 +157,12 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
                 <PushPin />
                 <div className="yearbook-polaroid-inner">
                   <ProfilePhoto
-                    src={student.photograph}
+                    src={student.localPhotoPath}
+                    fallbackSrc={student.photograph}
                     alt={student.name}
                     initials={getInitials(student.name)}
                   />
+
                 </div>
                 <div className="yearbook-polaroid-name">
                   {student.name.split(" ")[0]} {student.name.split(" ")[1] || ""}

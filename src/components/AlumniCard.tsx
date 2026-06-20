@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Student } from "@/types/student";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BookOpen, Mail } from "lucide-react";
+
 
 function getInitials(name: string) {
   return name.split(" ").filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
@@ -31,6 +33,28 @@ function totalActivities(student: Student): number {
     + student.moocCourses.length + student.nptelCourses.length + student.certifications.length
     + student.startups.length + student.volunteering.length + student.researchPapers.length;
 }
+
+/** Photo with fallback: local API → drive URL → initials */
+function CardPhoto({ localPath, driveSrc, alt, initials }: {
+  localPath: string; driveSrc: string; alt: string; initials: string;
+}) {
+  const sources = [localPath, driveSrc].filter(Boolean);
+  const [idx, setIdx] = useState(0);
+
+  if (!sources.length || idx >= sources.length) {
+    return <>{initials}</>;
+  }
+  return (
+    <img
+      src={sources[idx]}
+      alt={alt}
+      className="w-full h-full object-cover"
+      onError={() => setIdx((i) => i + 1)}
+      referrerPolicy="no-referrer"
+    />
+  );
+}
+
 
 export default function AlumniCard({ student, index }: { student: Student; index: number }) {
   const initials = getInitials(student.name);
@@ -61,13 +85,18 @@ export default function AlumniCard({ student, index }: { student: Student; index
               className="shrink-0 flex items-center justify-center rounded-full text-white font-bold text-sm shadow-inner overflow-hidden"
               style={{
                 width: 44, height: 44,
-                background: student.photograph ? "transparent" : "rgba(255,255,255,0.18)",
+                background: (student.localPhotoPath || student.photograph) ? "transparent" : "rgba(255,255,255,0.18)",
                 border: "2px solid rgba(255,255,255,0.35)",
                 fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.9rem",
               }}
             >
-              {student.photograph ? (
-                <img src={student.photograph} alt={student.name} className="w-full h-full object-cover" />
+              {(student.localPhotoPath || student.photograph) ? (
+                <CardPhoto
+                  localPath={student.localPhotoPath}
+                  driveSrc={student.photograph}
+                  alt={student.name}
+                  initials={initials}
+                />
               ) : initials}
             </div>
 
