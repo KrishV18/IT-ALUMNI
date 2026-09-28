@@ -39,32 +39,66 @@ export default function DownloadPDFButton({ students, variant = "default" }: Pro
     setError("");
     setProgress({ current: 0, total: 100, message: "Requesting PDF generation…" });
 
+    let currentJobId = "";
+
     try {
       setPhase("generating");
-      setProgress({ current: 50, total: 100, message: "Engine running on server. This may take a minute..." });
+      setProgress({ current: 10, total: 100, message: "Starting generation job..." });
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+      // 1. Start the job
+      const startRes = await fetch("/api/generate-pdf?action=start", { cache: "no-store" });
+      const startData = await startRes.json();
+      
+      if (!startRes.ok) {
+        throw new Error(startData.error || "Failed to start generation job");
+      }
+      
+      currentJobId = startData.jobId;
+      setProgress({ current: 30, total: 100, message: "Engine running on server. This may take a minute..." });
 
-      // The API now streams the PDF binary directly
-      const res = await fetch("/api/generate-pdf", {
-        signal: controller.signal,
-        cache: "no-store",
-      });
-      clearTimeout(timeout);
+      // 2. Poll for status
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Poll every 3s
+        
+        const statusRes = await fetch(`/api/generate-pdf?action=status&jobId=${currentJobId}`, { cache: "no-store" });
+        const statusData = await statusRes.json();
 
-      if (!res.ok) {
-        // Try to parse error JSON
-        let errMsg = `Server error: ${res.statusText}`;
+        if (!statusRes.ok) {
+          throw new Error(statusData.error || "Failed to check job status");
+        }
+
+        if (statusData.status === "error") {
+          throw new Error(statusData.error || "Generation failed on server");
+        }
+
+        if (statusData.status === "done") {
+          break; // Job is ready!
+        }
+        
+        // Update progress for "running" state
+        setProgress((prev) => ({ 
+          ...prev, 
+          current: Math.min(prev.current + 5, 90), // Fake progress up to 90%
+          message: "Processing profiles..." 
+        }));
+      }
+
+      setProgress({ current: 95, total: 100, message: "PDF ready. Downloading..." });
+
+      // 3. Download the actual file
+      const downloadRes = await fetch(`/api/generate-pdf?action=download&jobId=${currentJobId}`, { cache: "no-store" });
+      
+      if (!downloadRes.ok) {
+        let errMsg = "Failed to download PDF";
         try {
-          const data = await res.json();
-          errMsg = data.error || data.detail || errMsg;
+          const data = await downloadRes.json();
+          errMsg = data.error || errMsg;
         } catch { /* ignore */ }
         throw new Error(errMsg);
       }
 
       // Read as blob and trigger download via object URL
-      const blob = await res.blob();
+      const blob = await downloadRes.blob();
       const objectUrl = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
@@ -78,16 +112,12 @@ export default function DownloadPDFButton({ students, variant = "default" }: Pro
       setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
 
       const sizeMB = (blob.size / (1024 * 1024)).toFixed(2);
-      setProgress({ current: 100, total: 179, message: `PDF ready (${sizeMB} MB). Downloading...` });
+      setProgress({ current: 100, total: 100, message: `PDF downloaded (${sizeMB} MB)` });
       setPhase("done");
       setTimeout(() => setPhase("idle"), 4000);
     } catch (err) {
       console.error("PDF generation failed:", err);
-      if (err instanceof DOMException && err.name === "AbortError") {
-        setError("Download timed out. Please try again.");
-      } else {
-        setError(err instanceof Error ? err.message : "Failed to generate PDF");
-      }
+      setError(err instanceof Error ? err.message : "Failed to generate PDF");
       setPhase("error");
     }
   }, []);
