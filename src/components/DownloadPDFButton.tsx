@@ -37,48 +37,54 @@ export default function DownloadPDFButton({ students, variant = "default" }: Pro
   const handleDownload = useCallback(async () => {
     setPhase("loading");
     setError("");
-    setProgress({ current: 0, total: 0, message: "Fetching student directory…" });
+    setProgress({ current: 0, total: 100, message: "Requesting PDF generation…" });
 
     try {
-      let studentsData = students;
-      if (!studentsData) {
-        const res = await fetch("/api/students");
-        if (!res.ok) throw new Error(`Failed to fetch student data: ${res.statusText}`);
-        const json = await res.json();
-        studentsData = json.data;
-      }
-
-      if (!studentsData || studentsData.length === 0) {
-        throw new Error("No student profiles found to export.");
-      }
-
-      setProgress({ current: 0, total: studentsData.length, message: "Loading PDF engine…" });
-
-      const { generateDirectoryPDF } = await import("@/services/pdfGenerator");
-
       setPhase("generating");
+      setProgress({ current: 50, total: 100, message: "Engine running on server. This may take a minute..." });
 
-      const blob = await generateDirectoryPDF(studentsData, (current, total, message) => {
-        setProgress({ current, total, message });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+
+      // Step 1: Ask the server to generate the PDF and get back a download URL
+      const res = await fetch("/api/generate-pdf", {
+        signal: controller.signal,
+        cache: "no-store",
       });
+      clearTimeout(timeout);
 
-      const url = URL.createObjectURL(blob);
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || data.detail || `Server error: ${res.statusText}`);
+      }
+
+      if (!data.url) {
+        throw new Error("Server did not return a download URL.");
+      }
+
+      setProgress({ current: 100, total: 100, message: `PDF ready (${data.sizeMB} MB). Downloading...` });
+
+      // Step 2: Download the file via a normal link click (bypasses proxy)
       const a = document.createElement("a");
-      a.href = url;
+      a.href = data.url;
       a.download = "IT_Connect_Student_Directory_2022-2026.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
 
       setPhase("done");
       setTimeout(() => setPhase("idle"), 4000);
     } catch (err) {
       console.error("PDF generation failed:", err);
-      setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("Download timed out. Please try again.");
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to generate PDF");
+      }
       setPhase("error");
     }
-  }, [students]);
+  }, []);
 
   const dismiss = useCallback(() => {
     setPhase("idle");
