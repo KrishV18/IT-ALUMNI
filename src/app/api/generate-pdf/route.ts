@@ -2,17 +2,17 @@ import { NextResponse } from "next/server";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import os from "os";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 /**
- * Generate the yearbook PDF via Python, save it to public/downloads/,
- * and return a JSON response with the download URL.
+ * Generate the yearbook PDF via Python, then stream it directly as a binary
+ * response so it downloads correctly in both dev and production (Render).
  *
- * This two-step approach avoids the Next.js dev server proxy dropping
- * large binary responses (which caused "Failed to fetch" even though
- * the handler returned 200).
+ * Writing to public/ won't work in production because Next.js only serves
+ * static files that existed at build time. Streaming avoids that entirely.
  */
 export async function GET() {
   const scriptPath = path.join(process.cwd(), "python_code_pdf.py");
@@ -24,28 +24,8 @@ export async function GET() {
     );
   }
 
-  // Ensure the downloads directory exists under public/
-  const downloadsDir = path.join(process.cwd(), "public", "downloads");
-  if (!fs.existsSync(downloadsDir)) {
-    fs.mkdirSync(downloadsDir, { recursive: true });
-  }
-
-  // Clean up any old generated PDFs (keep the folder tidy)
-  try {
-    for (const f of fs.readdirSync(downloadsDir)) {
-      if (f.startsWith("it_yearbook_") && f.endsWith(".pdf")) {
-        const fPath = path.join(downloadsDir, f);
-        const stat = fs.statSync(fPath);
-        // Remove files older than 10 minutes
-        if (Date.now() - stat.mtimeMs > 10 * 60 * 1000) {
-          fs.unlinkSync(fPath);
-        }
-      }
-    }
-  } catch { /* ignore cleanup errors */ }
-
-  const fileName = `it_yearbook_${Date.now()}.pdf`;
-  const outPath = path.join(downloadsDir, fileName);
+  // Write PDF to system temp dir (always writable on any platform)
+  const outPath = path.join(os.tmpdir(), `it_yearbook_${Date.now()}.pdf`);
 
   // ── Run the Python generator ──────────────────────────────────────
   const genError = await runPythonGenerator(scriptPath, outPath);
@@ -68,15 +48,19 @@ export async function GET() {
     );
   }
 
-  const stat = fs.statSync(outPath);
-  const downloadUrl = `/downloads/${fileName}`;
+  // Stream the PDF bytes directly in the response
+  const buffer = fs.readFileSync(outPath);
 
-  return NextResponse.json({
-    ok: true,
-    url: downloadUrl,
-    fileName,
-    sizeBytes: stat.size,
-    sizeMB: (stat.size / (1024 * 1024)).toFixed(2),
+  // Clean up temp file after reading
+  try { fs.unlinkSync(outPath); } catch { /* ignore */ }
+
+  return new NextResponse(buffer, {
+    status: 200,
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="IT_Connect_Student_Directory_2022-2026.pdf"`,
+      "Content-Length": String(buffer.length),
+    },
   });
 }
 

@@ -46,33 +46,39 @@ export default function DownloadPDFButton({ students, variant = "default" }: Pro
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
 
-      // Step 1: Ask the server to generate the PDF and get back a download URL
+      // The API now streams the PDF binary directly
       const res = await fetch("/api/generate-pdf", {
         signal: controller.signal,
         cache: "no-store",
       });
       clearTimeout(timeout);
 
-      const data = await res.json();
-
       if (!res.ok) {
-        throw new Error(data.error || data.detail || `Server error: ${res.statusText}`);
+        // Try to parse error JSON
+        let errMsg = `Server error: ${res.statusText}`;
+        try {
+          const data = await res.json();
+          errMsg = data.error || data.detail || errMsg;
+        } catch { /* ignore */ }
+        throw new Error(errMsg);
       }
 
-      if (!data.url) {
-        throw new Error("Server did not return a download URL.");
-      }
+      // Read as blob and trigger download via object URL
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
 
-      setProgress({ current: 100, total: 100, message: `PDF ready (${data.sizeMB} MB). Downloading...` });
-
-      // Step 2: Download the file via a normal link click (bypasses proxy)
       const a = document.createElement("a");
-      a.href = data.url;
+      a.href = objectUrl;
       a.download = "IT_Connect_Student_Directory_2022-2026.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
 
+      // Revoke the object URL after a short delay
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 10000);
+
+      const sizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+      setProgress({ current: 100, total: 179, message: `PDF ready (${sizeMB} MB). Downloading...` });
       setPhase("done");
       setTimeout(() => setPhase("idle"), 4000);
     } catch (err) {
