@@ -47,5 +47,9 @@ next-env.d.ts
 # Local data folders
 /IT2022-26/
 
+# Python build artifacts
+/python_libs/
+__pycache__/
+
 # Generated PDF downloads
 /public/downloads/

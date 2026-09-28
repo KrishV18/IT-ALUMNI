@@ -101,6 +101,10 @@ async function runPythonGenerator(scriptPath: string, outPath: string): Promise<
       const proc = spawn(cmd, [...prefixArgs, ...args], {
         cwd: process.cwd(),
         stdio: ["ignore", "pipe", "pipe"],
+        env: {
+          ...process.env,
+          PYTHONPATH: path.join(process.cwd(), "python_libs"),
+        },
       });
 
       let stderr = "";
