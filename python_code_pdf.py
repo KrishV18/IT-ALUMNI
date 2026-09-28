@@ -63,6 +63,12 @@ import urllib.request
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Add project-local python_libs/ to path (for Render/cloud deployment)
+_script_dir = Path(__file__).resolve().parent
+_py_libs = _script_dir / "python_libs"
+if _py_libs.is_dir():
+    sys.path.insert(0, str(_py_libs))
+
 from PIL import Image, ImageDraw, ImageFont
 from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4
