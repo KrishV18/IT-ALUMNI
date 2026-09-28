@@ -54,6 +54,7 @@ python generate_complete_yearbook.py \
 import argparse
 import csv
 import json
+import gc
 import math
 import os
 import re
@@ -928,11 +929,11 @@ def resolve_image(name: str, roll: str, direct_value: str,
     return None
 
 
-def crop_photo(src: str, dst: str, size=(640, 900), radius=0):
-    """Fast print-resolution crop for the modest portrait frame.
+def crop_photo(src: str, dst: str, size=(480, 672), radius=0):
+    """Fast crop for the modest portrait frame.
 
-    640 px across a ~2.0 inch printed portrait is ~300 dpi. JPEG output is
-    much faster and smaller than per-student alpha PNG while preserving print
+    480 px across a ~2.0 inch printed portrait is ~240 dpi. JPEG output is
+    much faster and smaller than per-student alpha PNG while preserving
     quality; the surrounding rounded card provides the visual treatment.
     """
     im = Image.open(src).convert("RGB")
@@ -948,9 +949,10 @@ def crop_photo(src: str, dst: str, size=(640, 900), radius=0):
         im = im.crop((0, top, im.width, top + new_h))
     im = im.resize(size, Image.LANCZOS)
     if str(dst).lower().endswith(('.jpg','.jpeg')):
-        im.save(dst, 'JPEG', quality=92, optimize=True, subsampling=0, dpi=(300,300))
+        im.save(dst, 'JPEG', quality=80, optimize=True, subsampling=0, dpi=(150,150))
     else:
         im.save(dst, optimize=True)
+    im.close()
 
 def make_monogram(name: str, dst: str, size=(900, 1100), radius=44,
                   bg=(236, 241, 244), fg=(35, 74, 104)):
@@ -1806,7 +1808,7 @@ ASSET_HOD_PHOTO     = _resolve_asset(str(_ASSETS / "hod_photo.jpg"))
 
 _PRINT_IMAGE_CACHE = {}
 
-def _print_image(src, w_pt, h_pt, mode="cover", dpi=300):
+def _print_image(src, w_pt, h_pt, mode="cover", dpi=150):
     """Create a page-placement raster at approximately `dpi`.
 
     Source images are never stretched. In cover mode they are center-cropped;
@@ -1828,6 +1830,7 @@ def _print_image(src, w_pt, h_pt, mode="cover", dpi=300):
         canvas_im=Image.new('RGB',(px_w,px_h),(255,255,255))
         canvas_im.paste(rim,((px_w-nw)//2,(px_h-nh)//2))
         outim=canvas_im
+        rim.close()
     else:
         target=px_w/px_h
         sr=im.width/im.height
@@ -1838,9 +1841,11 @@ def _print_image(src, w_pt, h_pt, mode="cover", dpi=300):
             nh=int(im.width/target); top=(im.height-nh)//2
             im=im.crop((0,top,im.width,top+nh))
         outim=im.resize((px_w,px_h),Image.LANCZOS)
+    im.close()
     stem=safe_filename(Path(src).stem)
     p=os.path.join(tempfile.gettempdir(), f"_print_asset_{stem}_{px_w}x{px_h}_{mode}.jpg")
-    outim.save(p,'JPEG',quality=95,optimize=True,subsampling=0,dpi=(dpi,dpi))
+    outim.save(p,'JPEG',quality=80,optimize=True,subsampling=0,dpi=(dpi,dpi))
+    outim.close()
     _PRINT_IMAGE_CACHE[key]=p
     return p
 
@@ -2615,6 +2620,11 @@ def build_yearbook(args):
             page_no=page_no
         )
         page_no += 1
+
+        # Periodically free memory to stay within server RAM limits
+        if page_no % 20 == 0:
+            _PRINT_IMAGE_CACHE.clear()
+            gc.collect()
 
     if not args.students_only:
         pass # Removed closing page
