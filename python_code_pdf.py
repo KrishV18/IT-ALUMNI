@@ -116,6 +116,13 @@ def _find_font(candidates: List[str]) -> str:
             return p
     raise FileNotFoundError(f"None of the candidate fonts found: {candidates}")
 
+def _find_font_or_fallback(candidates: List[str], fallback: str) -> str:
+    """Return first existing font path, or fallback if none found."""
+    for p in candidates:
+        if Path(p).exists():
+            return p
+    return fallback
+
 # Windows paths first, then Linux/macOS fallbacks
 FONT_REG = _find_font([
     r"C:\Windows\Fonts\calibri.ttf",
@@ -129,12 +136,12 @@ FONT_BOLD = _find_font([
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/System/Library/Fonts/Helvetica.ttc",
 ])
-FONT_ITALIC = _find_font([
+FONT_ITALIC = _find_font_or_fallback([
     r"C:\Windows\Fonts\calibrii.ttf",
     r"C:\Windows\Fonts\ariali.ttf",
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
     "/System/Library/Fonts/Helvetica.ttc",
-])
+], FONT_REG)
 
 pdfmetrics.registerFont(TTFont("YB-Regular", FONT_REG))
 pdfmetrics.registerFont(TTFont("YB-Bold", FONT_BOLD))
